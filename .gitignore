@@ -3,4 +3,4 @@ settings.py
 env/
 *.DS_Store
 .idea*
-bin/*
+bin/
