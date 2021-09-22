@@ -1,4 +1,5 @@
-import logging, settings, requests, auth
+import logging, settings, requests
+import auth, helper
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -11,18 +12,13 @@ auth.auth()
 def start(update, context):
     #username = update.message.from_user
     username = update.message.chat.username
-    update.message.reply_text(f'Hello {username}! This is MOEX unofficial info bot. \n 
-                              Please use /help command to observe available requests.')
-
-def helper():
-    
-
+    update.message.reply_text(f'Hello {username}! This is MOEX unofficial info bot. Please use /help command to observe available requests.')
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', start))
-    dp.add_handler(CommandHandler('help', helper))
+    dp.add_handler(CommandHandler('help', helper.help))
     logging.info("The bot has been started")
     mybot.start_polling()
     mybot.idle()
