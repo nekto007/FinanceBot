@@ -10,4 +10,4 @@ def get_stock(update, context):
         update.message.reply_text(f'Наименование тикета: {x[0]}, Режим торговой сессии: {x[1]}, Цена открытия: {x[9]}, Цена закрытия: {x[23]}')
 
 if __name__ == '__main__':
-    get_stock()
+    pass
