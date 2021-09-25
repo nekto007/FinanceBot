@@ -1,6 +1,7 @@
-import requests
+import requests, auth
 
 def get_stock(update, context):
+    auth.is_cookie_expired(auth.validation_cookie) #Проверка текущего куки на валидность
     ticket = update.message.text.split()[1]
     response = requests.get(f'https://iss.moex.com/iss/engines/stock/markets/shares/securities/{ticket}.json?iss.meta=off')
     moex_answer = response.json()
