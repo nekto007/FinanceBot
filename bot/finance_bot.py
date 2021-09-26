@@ -76,7 +76,7 @@ def trand(update, context):
     else:
         ticket = text[1].lower().capitalize()
         average_15 = get_average(ticket, 15)
-        if average15 is not None:
+        if average_15 is not None:
             average_50 = get_average(ticket, 50)
             if average_15["average"] < average_50["average"]:
                 trand_course = 'Тренд идет вниз'
