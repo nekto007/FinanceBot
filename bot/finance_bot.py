@@ -15,7 +15,7 @@ def greet_user(update, context):
                               'На данный момент я умею только /price')
 
 
-def cost(update, context):
+def get_cost(update, context):
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -35,7 +35,7 @@ def cost(update, context):
                                       'повторно сделать запрос.')
 
 
-def average15(update, context):
+def get_15_days_average(update, context):
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -52,7 +52,7 @@ def average15(update, context):
                                       'повторно сделать запрос.')
 
 
-def average50(update, context):
+def get_50_days_average(update, context):
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -69,7 +69,7 @@ def average50(update, context):
                                       'повторно сделать запрос.')
 
 
-def trand(update, context):
+def get_trand_status(update, context):
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -98,10 +98,10 @@ def main():
                     use_context=True)
 
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler("trand", trand))
-    dp.add_handler(CommandHandler("price", cost))
-    dp.add_handler(CommandHandler("average15", average15))
-    dp.add_handler(CommandHandler("average50", average50))
+    dp.add_handler(CommandHandler("trand", get_trand_status))
+    dp.add_handler(CommandHandler("price", get_cost))
+    dp.add_handler(CommandHandler("average15", get_15_days_average))
+    dp.add_handler(CommandHandler("average50", get_50_days_average))
     dp.add_handler(CommandHandler("start", greet_user))
 
     mybot.start_polling()
