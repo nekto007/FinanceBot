@@ -1,6 +1,6 @@
-import logging, settings, requests
-import auth, helper, get_stock, get_cookie
-from requests.auth import HTTPBasicAuth
+import logging, settings
+import auth, get_cookie, trand, get_cost, average15, average50
+from price import get_price, get_average
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -8,22 +8,27 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
-def start(update, context):
-    #username = update.message.from_user
-    username = update.message.chat.username
-    update.message.reply_text(f'Hello {username}! This is MOEX unofficial info bot. Please use /help command to observe available requests.')
+def greet_user(update, context):
+    text = 'Вызван /start'
+    update.message.reply_text('Добро пожаловать в телеграм бот предоставляющий информацию с Московской биржи moex.ru ')
+
 
 def main():
-    mybot = Updater(settings.API_KEY, use_context=True)
-    auth.auth()
+    auth.auth() #авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
+    mybot = Updater(settings.BOT_API_KEY,
+                    use_context=True)
+
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler('start', start))
-    dp.add_handler(CommandHandler('help', helper.help))
-    dp.add_handler(CommandHandler('get', get_stock.get_stock))
-    dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))
-    logging.info("The bot has been started")
+    dp.add_handler(CommandHandler("trand", trand.get_trand_status))
+    dp.add_handler(CommandHandler("price", get_cost.get_cost))
+    dp.add_handler(CommandHandler("average15", average15.get_15_days_average))
+    dp.add_handler(CommandHandler("average50", average50.get_50_days_average))
+    dp.add_handler(CommandHandler('cookie', get_cookie.getcookie)) #Временная функция для внутренней проверки куки.
+    dp.add_handler(CommandHandler("start", greet_user))
+
     mybot.start_polling()
     mybot.idle()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
