@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 
 def get_price(emitet):
-    prices = dict()
+    prices = {}
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/securities/{emitet}.json?iss.meta=off'
     response = requests.get(url).json()
     if len(response['marketdata']['data']) != 0:
@@ -18,7 +18,7 @@ def get_price(emitet):
 
 def get_average(emitet, days):
     history_price = []
-    average = dict()
+    average = {}
     date_ago = (datetime.now() - timedelta(days)).strftime("%Y-%m-%d")
     yesterday = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d")
     url = f'https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/{emitet}' \
@@ -26,9 +26,12 @@ def get_average(emitet, days):
     response = requests.get(url).json()
     history_data = response['history']['data']
     if len(history_data) != 0:
-        for i in range(len(history_data)):
-            history_price.append(history_data[i][11])
+        for element in history_data:
+            history_price.append(element[11])
         average['ticket_name'] = history_data[0][3]
         average['company_name'] = history_data[0][2]
         average[f'average'] = round(sum(history_price) / len(history_price), 3)
         return average
+
+
+print(get_average('sber', 20))
