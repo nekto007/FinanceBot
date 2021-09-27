@@ -1,5 +1,5 @@
 import logging, settings, requests
-import auth, helper, get_stock
+import auth, helper, get_stock, get_cookie
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -15,11 +15,12 @@ def start(update, context):
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
+    auth.auth()
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('help', helper.help))
     dp.add_handler(CommandHandler('get', get_stock.get_stock))
-    auth.auth()
+    dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))
     logging.info("The bot has been started")
     mybot.start_polling()
     mybot.idle()
