@@ -1,4 +1,3 @@
-import requests, auth
 from price import get_price, get_average
 
 def get_15_days_average(update, context):
@@ -7,7 +6,6 @@ def get_15_days_average(update, context):
         update.message.reply_text("Введите ticket интересующуй вас акции")
     else:
         ticket = text[1].lower().capitalize()
-        auth.is_cookie_expired(auth.validation_cookie) #Проверка текущего куки на валидность
         average = get_average(ticket, 15)
         if average is not None:
             update.message.reply_text(

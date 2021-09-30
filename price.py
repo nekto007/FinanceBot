@@ -1,11 +1,13 @@
 import requests
+import authorization
 from datetime import datetime, timedelta
 
 
 def get_price(emitet):
     prices = {}
+    authorization.is_cookie_expired(authorization.validation_cookie) #Проверка текущего куки на валидность
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/securities/{emitet}.json?iss.meta=off'
-    response = requests.get(url).json()
+    response = requests.get(url, cookies=authorization.validation_cookie).json()
     if len(response['marketdata']['data']) != 0:
         prices['ticket_name'] = response['marketdata']['data'][2][0]
         prices['cost'] = response['marketdata']['data'][2][12]
@@ -19,11 +21,12 @@ def get_price(emitet):
 def get_average(emitet, days):
     history_price = []
     average = {}
+    authorization.is_cookie_expired(authorization.validation_cookie) #Проверка текущего куки на валидность
     date_ago = (datetime.now() - timedelta(days)).strftime("%Y-%m-%d")
     yesterday = (datetime.now() - timedelta(1)).strftime("%Y-%m-%d")
     url = f'https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/{emitet}' \
           f'.json?from={date_ago}&till={yesterday} '
-    response = requests.get(url).json()
+    response = requests.get(url, cookies=authorization.validation_cookie).json()
     history_data = response['history']['data']
     if len(history_data) != 0:
         for element in history_data:

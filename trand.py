@@ -1,9 +1,9 @@
-import requests, auth
+import requests
+import authorization
 from price import get_average
 
 
 def get_trand_status(update, context):
-    auth.is_cookie_expired(auth.validation_cookie) #Проверка текущего куки на валидность
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")

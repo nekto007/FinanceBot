@@ -1,5 +1,4 @@
-import requests, auth
-from price import get_price, get_average
+from price import get_average
 
 def get_50_days_average(update, context):
     text = update.message.text.split()

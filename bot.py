@@ -1,5 +1,10 @@
 import logging, settings
-import auth, get_cookie, trand, get_cost, average15, average50
+import authorization 
+import get_cookie 
+import trand
+import get_cost
+import average15
+import average50
 from price import get_price, get_average
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -14,7 +19,7 @@ def greet_user(update, context):
 
 
 def main():
-    auth.auth() #авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
+    authorization.get_auth() #авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
     mybot = Updater(settings.BOT_API_KEY,
                     use_context=True)
 

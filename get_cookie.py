@@ -1,7 +1,7 @@
-import auth
+import authorization
 
 def getcookie(update, context):
-    print(auth.validation_cookie)
+    print(authorization.validation_cookie)
         
 if __name__ == '__main__':
     pass
