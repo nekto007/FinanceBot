@@ -8,6 +8,7 @@ def get_auth():
     validation_cookie = response.cookies
     current_cookie = response.cookies.get_dict()['MicexPassportCert']
     cookie_for_request = {'MicexPassportCert' : current_cookie} #словарь куки для передачи в запрос. Проверить(!)
+    return cookie_for_request
 
 def is_cookie_expired(cookie_for_check):
     for cookie in cookie_for_check:

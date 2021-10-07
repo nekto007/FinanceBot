@@ -1,5 +1,6 @@
 *.pyc
 tests.py
+identifier.sqlite
 settings.py
 env/
 *.DS_Store
