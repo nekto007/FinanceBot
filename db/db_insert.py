@@ -1,5 +1,5 @@
 from db_connect import db_session
-from db_models import Authorization
+from models.db_models import Authorization
 
 
 current_token = Authorization(token = 'test2')

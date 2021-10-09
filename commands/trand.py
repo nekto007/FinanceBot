@@ -1,4 +1,4 @@
-from price import get_average
+from api.moex.price import get_average
 
 
 def get_trand_status(update, context):

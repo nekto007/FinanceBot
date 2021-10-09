@@ -1,4 +1,4 @@
-from price import get_price
+from api.moex.price import get_price
 
 
 def get_cost(update, context):

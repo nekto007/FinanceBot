@@ -1,4 +1,4 @@
-from price import get_price, get_average
+from api.moex.price import get_average
 
 def get_15_days_average(update, context):
     text = update.message.text.split()
