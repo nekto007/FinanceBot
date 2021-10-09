@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, Text, Date, DateTim
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.functions import current_timestamp
-from db_connect import Base, engine
+from db.db_connect import Base, engine
 
 
 class StockInfo(Base):
@@ -11,9 +11,9 @@ class StockInfo(Base):
         'comment': 'информация по акциям'
     }
 
-    id = Column(Integer, primary_key=True, autoincrement=True, comment='id')
+    id = Column(Integer, autoincrement=True, comment='id')
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
-    updated_at = Column(Integer, default=current_timestamp, comment='Дата обновления')
+    updated_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента', primary_key=True)
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
     open_price = Column(Numeric, comment='Цена открытия торгой')
@@ -31,7 +31,7 @@ class StockHistory(Base):
     __tableargs__ = {
         'comment': 'исторические данные по акциям'
     }
-    id = Column(Integer, autoincrement=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
     updated_at = Column(Integer, default=current_timestamp, comment='Дата обновления')
     sec_id = Column(Integer, ForeignKey('stock_info.id'))
