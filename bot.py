@@ -1,5 +1,8 @@
 import logging, settings
+
+from requests.api import get
 import authorization 
+from authorization import get_auth
 import get_cookie 
 import trand
 import get_cost
@@ -20,6 +23,7 @@ def greet_user(update, context):
 
 def main():
     authorization.get_auth() #авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
+    print(get_auth())
     mybot = Updater(settings.BOT_API_KEY,
                     use_context=True)
 
