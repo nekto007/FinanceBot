@@ -1,5 +1,8 @@
 import requests
+import sqlalchemy
+
 from auth import authorization
+
 from datetime import datetime, timedelta
 from db.db_connect import db_session
 from db.db_models import StockInfo
@@ -12,10 +15,18 @@ def get_price(emitet):
     response = requests.get(url, cookies=authorization.get_auth()).json()
     if len(response['marketdata']['data']) != 0:
         for i in response['marketdata']['data']:
-            current_info = StockInfo(sec_id=i[0], board_id='TQBR', open_price=i[9], close_price=i[49],
-                                     current_cost=i[12], low_cost_daily=i[10], high_cost_daily=i[10])
-            db_session.add(current_info)
-            db_session.commit()
+            count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
+            if count_string > 0:
+                current_info = {'open_price': i[9], 'close_price': i[49],
+                                'current_cost': i[12], 'low_cost_daily': i[10], 'high_cost_daily': i[10],
+                                'updated_at': datetime.utcnow()}
+                db_session.query(StockInfo).filter_by(sec_id=emitet.upper()).update(current_info)
+                db_session.commit()
+            else:
+                current_info = StockInfo(sec_id=i[0], board_id='TQBR', open_price=i[9], close_price=i[49],
+                                         current_cost=i[12], low_cost_daily=i[10], high_cost_daily=i[10])
+                db_session.add(current_info)
+                db_session.commit()
             prices['ticket_name'] = i[0]
             prices['cost'] = i[12]
             prices['cost_open'] = i[9]
@@ -61,6 +72,4 @@ def get_date_dividents(emitet):
 
 
 if __name__ == "__main__":
-    print(get_average('sber', 20))
-    print(get_price('tatn'))
-    print(get_date_dividents('tatn'))
+    pass

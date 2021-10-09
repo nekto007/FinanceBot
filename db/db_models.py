@@ -12,19 +12,19 @@ class StockInfo(Base):
     }
 
     id = Column(Integer, autoincrement=True, comment='id')
-    created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
-    updated_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата обновления')
-    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента', primary_key=True)
+    created_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата создания')
+    updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента', primary_key=True, unique=True)
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
-    open_price = Column(Numeric, comment='Цена открытия торгой')
-    close_price = Column(Numeric, comment='Цена закрытия торгов')
-    current_cost = Column(Numeric, comment='Текущая стоимость')
-    low_cost_daily = Column(Numeric, comment='Минимальная цена сделки за день')
-    high_cost_daily = Column(Numeric, comment='Максимальная цена сделки за день')
+    open_price = Column(Numeric(2), comment='Цена открытия торгой')
+    close_price = Column(Numeric(2), comment='Цена закрытия торгов')
+    current_cost = Column(Numeric(2), comment='Текущая стоимость')
+    low_cost_daily = Column(Numeric(2), comment='Минимальная цена сделки за день')
+    high_cost_daily = Column(Numeric(2), comment='Максимальная цена сделки за день')
 
     def __repr__(self):
-        return f'{self.id}, {self.sec_id}'
-
+        return f'{self.sec_id}, {self.current_cost}, {self.open_price}, {self.close_price}, {self.high_cost_daily},' \
+               f' {self.low_cost_daily}'
 
 class StockHistory(Base):
     __tablename__ = 'stock_history'
