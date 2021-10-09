@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, VARCHAR, Boolean, TIMESTAMP
 from sqlalchemy.sql.functions import current_timestamp
 from db_connect import Base, engine
-from datetime import datetime
 
 
 class Authorization(Base): #Таблица авторизации
