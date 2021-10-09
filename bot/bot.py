@@ -1,16 +1,10 @@
 import logging, settings
 
-from requests.api import get
-import authorization 
-from authorization import get_auth
-import get_cookie 
-import trand
-import get_cost
-import average15
-import average50
-from price import get_price, get_average
-from datetime import datetime
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from auth import authorization, get_cookie
+from auth.authorization import get_auth
+from commands import get_cost, trand
+from bot import average15, average50
+from telegram.ext import Updater, CommandHandler
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

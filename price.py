@@ -1,11 +1,6 @@
 import requests
-import authorization
+from auth import authorization
 from datetime import datetime, timedelta
-import sqlite3
-import sqlalchemy
-from sqlalchemy import create_engine, insert
-
-engine = create_engine('sqlite:///:identifier.sqlite:', echo=True)
 
 
 def get_price(emitet):

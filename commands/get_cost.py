@@ -1,5 +1,3 @@
-import requests
-import authorization
 from price import get_price
 
 
