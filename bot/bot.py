@@ -1,5 +1,5 @@
-import logging, settings
-
+import logging
+import settings
 from auth import authorization
 from commands import get_cost, trand, get_cookie
 from commands import average15, average50
