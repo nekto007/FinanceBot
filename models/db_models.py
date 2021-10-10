@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, \
-    TIMESTAMP, Numeric, Boolean, JSON
-from sqlalchemy.sql.functions import current_timestamp
-from db.db_connect import Base, engine
+from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, INTEGER, \
+    TIMESTAMP, Numeric, Boolean, JSON, Date
+from sqlalchemy.sql.functions import current_timestamp, now
+from db.db_connect import Base
 
 
 class Authorization(Base):  # Таблица авторизации
     __tablename__ = "auth"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(INTEGER, primary_key=True)
     token = Column(VARCHAR)
     is_expired = Column(Boolean, default=False)
     stock_type = Column(Integer, default=1)
@@ -22,7 +22,7 @@ class Authorization(Base):  # Таблица авторизации
 class ClientStatus(Base):  # Таблица client_status
     __tablename__ = "client_status"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     name = Column(VARCHAR, nullable=False)
 
     def __repr__(self):
@@ -32,7 +32,7 @@ class ClientStatus(Base):  # Таблица client_status
 class Clients(Base):  # Таблица clients
     __tablename__ = "clients"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     telegram_id = Column(VARCHAR)
     first_name = Column(VARCHAR)
     last_name = Column(VARCHAR)
@@ -51,14 +51,14 @@ class Dividents(Base):
     __tableargs__ = {'comment': 'Информация о дивидендах по акциям'
                      }
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
-    updated_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
-    sec_id = Column(Integer, ForeignKey('stock_info.id'))
+    id = Column(INTEGER, primary_key=True)
+    created_at = Column(TIMESTAMP, nullable=False, default=now())
+    updated_at = Column(Date, nullable=False, default=now())
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     dividents_data = Column(JSON)
 
     def __repr__(self):
-        return f"{self.sec_id}, {self.dividents_data}"
+        return f"{self.updated_at},{self.dividents_data}"
 
 
 class StockHistory(Base):
@@ -66,10 +66,10 @@ class StockHistory(Base):
     __tableargs__ = {
         'comment': 'исторические данные по акциям'
     }
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
     updated_at = Column(Integer, default=current_timestamp, comment='Дата обновления')
-    sec_id = Column(Integer, ForeignKey('stock_info.id'))
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR)
     short_name = Column(VARCHAR)
     trade_date = Column(TIMESTAMP)
@@ -90,17 +90,16 @@ class StockInfo(Base):
         'comment': 'информация по акциям'
     }
 
-    id = Column(Integer, autoincrement=True, comment='id')
+    id = Column(Integer, primary_key=True, comment='id')
     created_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата создания')
     updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
-    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента', primary_key=True,
-                    unique=True)
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
-    open_price = Column(Numeric(2), comment='Цена открытия торгой')
-    close_price = Column(Numeric(2), comment='Цена закрытия торгов')
-    current_cost = Column(Numeric(2), comment='Текущая стоимость')
-    low_cost_daily = Column(Numeric(2), comment='Минимальная цена сделки за день')
-    high_cost_daily = Column(Numeric(2), comment='Максимальная цена сделки за день')
+    open_price = Column(Numeric, comment='Цена открытия торгой')
+    close_price = Column(Numeric, comment='Цена закрытия торгов')
+    current_cost = Column(Numeric, comment='Текущая стоимость')
+    low_cost_daily = Column(Numeric, comment='Минимальная цена сделки за день')
+    high_cost_daily = Column(Numeric, comment='Максимальная цена сделки за день')
 
     def __repr__(self):
         return f'{self.sec_id}, {self.current_cost}, {self.open_price}, {self.close_price}, {self.high_cost_daily},' \
@@ -112,8 +111,8 @@ class Trands(Base):
     __tableargs__ = {
         'comment': 'Тренды цены акций'
     }
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    sec_id = Column(Integer, ForeignKey('stock_info.id'))
+    id = Column(Integer, primary_key=True)
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     current_trand_days = Column(Integer, default=1)
     trand_status = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
@@ -124,5 +123,5 @@ class Trands(Base):
 
 
 if __name__ == "__main__":
-    engine = create_engine('sqlite:///../identifier_test.sqlite')
+    engine = create_engine('sqlite:///../identifier_test.sqlite', echo=True)
     Base.metadata.create_all(bind=engine)

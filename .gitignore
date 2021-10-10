@@ -30,6 +30,7 @@ settings.py
 .idea/**/gradle.xml
 .idea/**/libraries
 *.iws /out/
+.idea
 
 # Environments
 .env
@@ -61,3 +62,4 @@ wheels/
 
 # pyenv
 .python-version
+/.idea/
