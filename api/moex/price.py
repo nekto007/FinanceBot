@@ -1,10 +1,10 @@
 import requests
 
 from auth import authorization
-
+from sqlalchemy import select
 from datetime import datetime, timedelta
 from db.db_connect import db_session
-from models.db_models import StockInfo
+from models.db_models import StockInfo, Dividents
 
 
 def get_price(emitet):
@@ -14,13 +14,12 @@ def get_price(emitet):
     response = requests.get(url, cookies=authorization.get_auth()).json()
     if len(response['marketdata']['data']) != 0:
         for i in response['marketdata']['data']:
-            count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
-            print(count_string)
+            count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
             if count_string > 0:
                 current_info = {'open_price': i[9], 'close_price': i[49],
                                 'current_cost': i[12], 'low_cost_daily': i[10], 'high_cost_daily': i[10],
                                 'updated_at': datetime.utcnow()}
-                db_session.query(StockInfo).filter_by(sec_id=emitet.upper()).update(current_info)
+                db_session.query(StockInfo).filter_by(sec_id=emitet).update(current_info)
                 db_session.commit()
             else:
                 current_info = StockInfo(sec_id=i[0], board_id='TQBR', open_price=i[9], close_price=i[49],
@@ -56,22 +55,30 @@ def get_average(emitet, days):
 
 
 def get_date_dividents(emitet):
-    dividents = {}
     # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
+    dividents_date = db_session.query(Dividents.updated_at).filter(Dividents.sec_id == emitet).all()
+    count_string = len(dividents_date)
+    if count_string > 0 and dividents_date == datetime.now().date():
+        dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet)
+        return dividents_info[0][0]
     url = f'https://iss.moex.com/iss/securities/{emitet}/dividends.json'
     response = requests.get(url, cookies=authorization.get_auth()).json()
-    last_dividents = response['dividends']['data']
-    count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
-    # if last_dividents[2] < str(datetime.now()):
-    #     dividents['date_dividents'] = f'Дата выплаты последних дивидендов: {last_dividents[2]}, ' \
-    #                                   f'на сумму: {last_dividents[3]} {last_dividents[4]} за акцию'
-    # else:
-    #     dividents['date_dividents'] = f'Дата, до которой включительно необходимо купить акции для ' \
-    #                                   f'получения диведендов: {last_dividents[2]}, ' \
-    #                                   f'на сумму: {last_dividents[3]} {last_dividents[4]} за акцию'
-    return dividents
+    dividents = response['dividends']['data']
+    if count_string > 0:
+        current_info = {'sec_id': emitet,
+                        'dividents_data': dividents,
+                        'updated_at': datetime.now().date()}
+        db_session.query(Dividents).filter_by(sec_id=emitet).update(current_info)
+        db_session.commit()
+    elif dividents:
+        current_info = Dividents(sec_id=emitet, dividents_data=dividents)
+        db_session.add(current_info)
+        db_session.commit()
+    else:
+        return None
+    dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet)
+    return dividents_info[0][0]
 
 
 if __name__ == "__main__":
-    print(get_price('sber'))
-    print(get_price('tatn'))
+    pass

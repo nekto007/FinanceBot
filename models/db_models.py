@@ -53,7 +53,7 @@ class Dividents(Base):
 
     id = Column(INTEGER, primary_key=True)
     created_at = Column(TIMESTAMP, nullable=False, default=now())
-    updated_at = Column(Date, nullable=False, default=now())
+    updated_at = Column(TIMESTAMP, nullable=False, default=now())
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     dividents_data = Column(JSON)
 
