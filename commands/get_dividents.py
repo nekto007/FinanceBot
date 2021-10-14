@@ -13,7 +13,7 @@ def get_dividents_info(update, context):
                 'Дата, до которой включительно необходимо купить акции биржевых эмитетов для получения дивидендов \n'
                 'Дата \t\t\t\t\t\t\t\t\t\t\t Сумма'
             )
-            for divident in dividents:
+            for divident in sorted(dividents, reverse=True):
                 update.message.reply_text(f'{divident[2]}\t\t{divident[3]} {divident[4]}')
         else:
             update.message.reply_text(f'По указанному тикеру {ticket} дивидендов не найдено. '
