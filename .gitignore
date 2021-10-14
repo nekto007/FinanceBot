@@ -11,7 +11,7 @@ db.sqlite3
 *.py[cod]
 *$py.class
 >>>>>>> 4d717ce725efcbce64fbd765406440575c80964b
-settings.py
+configs/settings.py
 
 # Backup files #
 *.bak

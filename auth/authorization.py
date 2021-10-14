@@ -1,5 +1,5 @@
 import requests
-import settings
+from configs import settings
 from requests.auth import HTTPBasicAuth
 
 
@@ -19,4 +19,4 @@ def is_cookie_expired(cookie_for_check):
 
 
 if __name__ == '__main__':
-    pass
+    print(get_auth())
