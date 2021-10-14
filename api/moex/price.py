@@ -1,38 +1,41 @@
 import requests
-
 from auth import authorization
-from sqlalchemy import select
 from datetime import datetime, timedelta
 from db.db_connect import db_session
 from models.db_models import StockInfo, Dividents
 
 
 def get_price(emitet):
-    prices = {}
-    # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json?iss.meta=off'
-    response = requests.get(url, cookies=authorization.get_auth()).json()
-    if len(response['marketdata']['data']) != 0:
-        for i in response['marketdata']['data']:
+    # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
+    price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).all()
+    len_price_date = len(price_date)
+    if len_price_date and (datetime.now() - price_date[0][0]).total_seconds() < 3600:
+        pass
+    else:
+        response = requests.get(url, cookies=authorization.get_auth()).json()
+        stock_data = response['marketdata']['data']
+        if len(stock_data):
             count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
-            if count_string > 0:
-                current_info = {'open_price': i[9], 'close_price': i[49],
-                                'current_cost': i[12], 'low_cost_daily': i[10], 'high_cost_daily': i[10],
-                                'updated_at': datetime.utcnow()}
-                db_session.query(StockInfo).filter_by(sec_id=emitet).update(current_info)
+            if count_string:
+                stock_info = {'open_price': int(stock_data[9]*100), 'close_price': int(stock_data[49]*100),
+                              'current_cost': int(stock_data[12]*100), 'low_cost_daily': int(stock_data[10]*100),
+                              'high_cost_daily': int(stock_data[10]*100), 'updated_at': datetime.now()}
+                db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                 db_session.commit()
             else:
-                current_info = StockInfo(sec_id=i[0], board_id='TQBR', open_price=i[9], close_price=i[49],
-                                         current_cost=i[12], low_cost_daily=i[10], high_cost_daily=i[10])
+                current_info = StockInfo(sec_id=stock_data[0], board_id='TQBR', open_price=int(stock_data[9]*100)
+                                         , close_price=int(stock_data[49]*100), current_cost=int(stock_data[12]*100),
+                                         low_cost_daily=int(stock_data[10]*100), high_cost_daily=int(stock_data[10]*100)
+                                         )
                 db_session.add(current_info)
                 db_session.commit()
-            prices['ticket_name'] = i[0]
-            prices['cost'] = i[12]
-            prices['cost_open'] = i[9]
-            prices['cost_close'] = i[49]
-            prices['max_cost'] = i[11]
-            prices['min_cost'] = i[10]
-            return prices
+        else:
+            return None
+    stock_info = db_session.query(StockInfo.sec_id, StockInfo.current_cost, StockInfo.open_price,
+                                  StockInfo.close_price, StockInfo.high_cost_daily,
+                                  StockInfo.low_cost_daily).filter(StockInfo.sec_id == emitet).first()
+    return stock_info
 
 
 def get_average(emitet, days):
@@ -57,16 +60,15 @@ def get_average(emitet, days):
 def get_date_dividents(emitet):
     # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
     dividents_date = db_session.query(Dividents.updated_at).filter(Dividents.sec_id == emitet).all()
-    count_string = len(dividents_date)
-    if count_string > 0 and dividents_date == datetime.now().date():
-        dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet)
+    len_dividents_date = len(dividents_date)
+    if len_dividents_date and dividents_date == datetime.now().date():
+        dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet).all()
         return dividents_info[0][0]
     url = f'https://iss.moex.com/iss/securities/{emitet}/dividends.json'
     response = requests.get(url, cookies=authorization.get_auth()).json()
     dividents = response['dividends']['data']
-    if count_string > 0:
-        current_info = {'sec_id': emitet,
-                        'dividents_data': dividents,
+    if len_dividents_date and dividents:
+        current_info = {'dividents_data': dividents,
                         'updated_at': datetime.now().date()}
         db_session.query(Dividents).filter_by(sec_id=emitet).update(current_info)
         db_session.commit()
