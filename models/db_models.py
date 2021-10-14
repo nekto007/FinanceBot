@@ -95,11 +95,11 @@ class StockInfo(Base):
     updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
-    open_price = Column(Numeric, comment='Цена открытия торгой')
-    close_price = Column(Numeric, comment='Цена закрытия торгов')
-    current_cost = Column(Numeric, comment='Текущая стоимость')
-    low_cost_daily = Column(Numeric, comment='Минимальная цена сделки за день')
-    high_cost_daily = Column(Numeric, comment='Максимальная цена сделки за день')
+    open_price = Column(INTEGER(), comment='Цена открытия торгой')
+    close_price = Column(INTEGER(), comment='Цена закрытия торгов')
+    current_cost = Column(INTEGER(), comment='Текущая стоимость')
+    low_cost_daily = Column(INTEGER(), comment='Минимальная цена сделки за день')
+    high_cost_daily = Column(INTEGER(), comment='Максимальная цена сделки за день')
 
     def __repr__(self):
         return f'{self.sec_id}, {self.current_cost}, {self.open_price}, {self.close_price}, {self.high_cost_daily},' \
