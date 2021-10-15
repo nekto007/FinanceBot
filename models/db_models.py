@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Column, ForeignKey, Integer, VARCHAR, INTEGER, \
-    TIMESTAMP, Numeric, Boolean, JSON, Date
+from sqlalchemy import Column, ForeignKey, INTEGER, VARCHAR, INTEGER, \
+    TIMESTAMP, Numeric, Boolean, JSON, Date, DATETIME, Index
 from sqlalchemy.sql.functions import current_timestamp, now
 from db.db_connect import Base
 
@@ -11,7 +11,7 @@ class Authorization(Base):  # Таблица авторизации
     id = Column(INTEGER, primary_key=True)
     token = Column(VARCHAR)
     is_expired = Column(Boolean, default=False)
-    stock_type = Column(Integer, default=1)
+    stock_type = Column(INTEGER, default=1)
     created_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
     updated_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
 
@@ -19,10 +19,20 @@ class Authorization(Base):  # Таблица авторизации
         return f"{self.token}, {self.created_at}"
 
 
+class Calendar(Base):  # Таблица client_status
+    __tablename__ = "calendar"
+
+    id = Column(INTEGER, primary_key=True)
+    date = Column(VARCHAR, unique=True)
+
+    def __repr__(self):
+        return f"{self.id}, {self.date}"
+
+
 class ClientStatus(Base):  # Таблица client_status
     __tablename__ = "client_status"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(INTEGER, primary_key=True)
     name = Column(VARCHAR, nullable=False)
 
     def __repr__(self):
@@ -32,13 +42,13 @@ class ClientStatus(Base):  # Таблица client_status
 class Clients(Base):  # Таблица clients
     __tablename__ = "clients"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(INTEGER, primary_key=True)
     telegram_id = Column(VARCHAR)
     first_name = Column(VARCHAR)
     last_name = Column(VARCHAR)
     created_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
     updated_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
-    status = Column(Integer, default=1)
+    status = Column(INTEGER, default=1)
     is_deleted = Column(Boolean, default=False)
     username = Column(VARCHAR)
 
@@ -66,19 +76,20 @@ class StockHistory(Base):
     __tableargs__ = {
         'comment': 'исторические данные по акциям'
     }
-    id = Column(Integer, primary_key=True)
-    created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
-    updated_at = Column(Integer, default=current_timestamp, comment='Дата обновления')
+    __table_args__ = (Index('stock_history_sec_id_trade_date_uindex', 'sec_id', 'trade_date', unique=True),)
+    id = Column(INTEGER, primary_key=True)
+    created_at = Column(TIMESTAMP, default=now)
+    updated_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR)
     short_name = Column(VARCHAR)
-    trade_date = Column(TIMESTAMP)
-    value_trade = Column(Numeric)
-    number_of_trades = Column(Integer)
-    open_cost = Column(Numeric)
-    close_cost = Column(Numeric)
-    low_cost = Column(Numeric)
-    high_cost = Column(Numeric)
+    trade_date = Column(VARCHAR)
+    value_trade = Column(INTEGER)
+    number_of_trades = Column(INTEGER)
+    open_cost = Column(INTEGER)
+    close_cost = Column(INTEGER)
+    low_cost = Column(INTEGER)
+    high_cost = Column(INTEGER)
 
     def __repr__(self):
         return f'{self.id}, {self.sec_id}'
@@ -90,7 +101,7 @@ class StockInfo(Base):
         'comment': 'информация по акциям'
     }
 
-    id = Column(Integer, primary_key=True, comment='id')
+    id = Column(INTEGER, primary_key=True, comment='id')
     created_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата создания')
     updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
@@ -111,12 +122,12 @@ class Trands(Base):
     __tableargs__ = {
         'comment': 'Тренды цены акций'
     }
-    id = Column(Integer, primary_key=True)
+    id = Column(INTEGER, primary_key=True)
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
-    current_trand_days = Column(Integer, default=1)
+    current_trand_days = Column(INTEGER, default=1)
     trand_status = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
-    updated_at = Column(Integer, default=current_timestamp, comment='Дата обновления')
+    updated_at = Column(INTEGER, default=current_timestamp, comment='Дата обновления')
 
     def __repr__(self):
         return f'{self.id}, {self.sec_id}'
