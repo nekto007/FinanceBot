@@ -5,25 +5,22 @@ from db.db_connect import db_session
 from models.db_models import StockInfo, Dividents, StockHistory, Calendar
 
 
-# import prod
-
-
 def get_price(emitet):
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json?iss.meta=off'
     # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
-    price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).all()
+    price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).first()
     len_price_date = len(price_date)
     if len_price_date and (datetime.now() - price_date[0][0]).total_seconds() < 3600:
         pass
     else:
         response = requests.get(url, cookies=authorization.get_auth()).json()
-        stock_data = response['marketdata']['data']
+        stock_data = response['marketdata']['data'][0]
         if len(stock_data):
             count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
             if count_string:
                 stock_info = {'open_price': int(stock_data[9] * 100), 'close_price': int(stock_data[49] * 100),
                               'current_cost': int(stock_data[12] * 100), 'low_cost_daily': int(stock_data[10] * 100),
-                              'high_cost_daily': int(stock_data[10] * 100), 'updated_at': datetime.now()}
+                              'high_cost_daily': int(stock_data[11] * 100), 'updated_at': datetime.now()}
                 db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                 db_session.commit()
             else:
@@ -31,7 +28,7 @@ def get_price(emitet):
                                          , close_price=int(stock_data[49] * 100),
                                          current_cost=int(stock_data[12] * 100),
                                          low_cost_daily=int(stock_data[10] * 100),
-                                         high_cost_daily=int(stock_data[10] * 100)
+                                         high_cost_daily=int(stock_data[11] * 100)
                                          )
                 db_session.add(current_info)
                 db_session.commit()
