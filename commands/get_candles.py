@@ -14,22 +14,37 @@ db_session = scoped_session(sessionmaker(bind=engine))
 
 stock_scores = db_session.query(StockHistory.trade_date, StockHistory.open_cost, StockHistory.high_cost, StockHistory.low_cost,
                          StockHistory.close_cost).filter(StockHistory.sec_id == 'TATN').all()
-dates = []
-open_cost = []
-high_cost = []
-low_cost = []
-close_cost = []
-for stock in stock_scores:
-    dates.append(stock[0])
-    open_cost.append(stock[1])
-    high_cost.append(stock[2])
-    low_cost.append(stock[3])
-    close_cost.append(stock[4])
-# print(dates, open_cost, high_cost, low_cost, close_cost)
-fig = go.Figure(data=[go.Candlestick(x=dates,
-                open=open_cost,
-                high=high_cost,
-                low=low_cost,
-                close=close_cost)])
+# dates = []
+# open_cost = []
+# high_cost = []
+# low_cost = []
+# close_cost = []
+# for stock in stock_scores:
+#     dates.append(stock[0])
+#     open_cost.append(stock[1])
+#     high_cost.append(stock[2])
+#     low_cost.append(stock[3])
+#     close_cost.append(stock[4])
+# # print(dates, open_cost, high_cost, low_cost, close_cost)
+# fig = go.Figure(data=[go.Candlestick(x=dates,
+#                 open=open_cost,
+#                 high=high_cost,
+#                 low=low_cost,
+#                 close=close_cost)])
 
-fig.show()
+stocks_dict = {}
+for row in stock_scores:
+    dates, open_cost, high_cost, low_cost, close_cost = row[0], row[1], row[2], row[3], row[4]
+    stocks_dict.setdefault("dates", []).append(dates)
+    stocks_dict.setdefault("open_cost", []).append(open_cost)
+    stocks_dict.setdefault("high_cost", []).append(high_cost)
+    stocks_dict.setdefault("low_cost", []).append(low_cost)
+    stocks_dict.setdefault("close_cost", []).append(close_cost)
+
+print(stocks_dict)
+
+
+#fig.show()
+
+
+
