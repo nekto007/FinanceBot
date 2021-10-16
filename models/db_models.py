@@ -10,10 +10,8 @@ class Authorization(Base):  # Таблица авторизации
 
     id = Column(INTEGER, primary_key=True)
     token = Column(VARCHAR)
-    is_expired = Column(Boolean, default=False)
     stock_type = Column(INTEGER, default=1)
     created_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
-    updated_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
 
     def __repr__(self):
         return f"{self.token}, {self.created_at}"
