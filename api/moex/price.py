@@ -5,12 +5,9 @@ from db.db_connect import db_session
 from models.db_models import StockInfo, Dividents, StockHistory, Calendar
 
 
-# import prod
-
-
 def get_price(emitet):
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json?iss.meta=off'
-    price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).all()
+    price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).first()
     len_price_date = len(price_date)
     if len_price_date and (datetime.now() - price_date[0][0]).total_seconds() < 3600:
         pass
