@@ -10,10 +10,8 @@ class Authorization(Base):  # Таблица авторизации
 
     id = Column(INTEGER, primary_key=True)
     token = Column(VARCHAR)
-    is_expired = Column(Boolean, default=False)
     stock_type = Column(INTEGER, default=1)
     created_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
-    updated_at = Column(TIMESTAMP, nullable=False, default=current_timestamp())
 
     def __repr__(self):
         return f"{self.token}, {self.created_at}"
@@ -29,16 +27,6 @@ class Calendar(Base):  # Таблица client_status
         return f"{self.id}, {self.date}"
 
 
-class ClientStatus(Base):  # Таблица client_status
-    __tablename__ = "client_status"
-
-    id = Column(INTEGER, primary_key=True)
-    name = Column(VARCHAR, nullable=False)
-
-    def __repr__(self):
-        return f"{self.id}, {self.name}"
-
-
 class Clients(Base):  # Таблица clients
     __tablename__ = "clients"
 
@@ -51,6 +39,7 @@ class Clients(Base):  # Таблица clients
     status = Column(INTEGER, default=1)
     is_deleted = Column(Boolean, default=False)
     username = Column(VARCHAR)
+    message = Column(VARCHAR)
 
     def __repr__(self):
         return f"{self.id}, {self.telegram_id,}, {self.username}"
@@ -134,5 +123,5 @@ class Trands(Base):
 
 
 if __name__ == "__main__":
-    engine = create_engine('sqlite:///../identifier_test.sqlite', echo=True)
+    engine = create_engine('sqlite:///../identifier.sqlite', echo=True)
     Base.metadata.create_all(bind=engine)

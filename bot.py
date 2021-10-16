@@ -4,7 +4,8 @@ from configs import settings
 from auth import authorization
 from commands import get_cost, trand, get_cookie
 from commands import average15, average50, get_dividents
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from client_info import client_info
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -29,7 +30,7 @@ def main():
     dp.add_handler(CommandHandler("average50", average50.get_50_days_average))
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
-
+    dp.add_handler(MessageHandler(Filters.text, client_info))
     mybot.start_polling()
     mybot.idle()
 

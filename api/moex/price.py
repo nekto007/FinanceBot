@@ -7,7 +7,6 @@ from models.db_models import StockInfo, Dividents, StockHistory, Calendar
 
 def get_price(emitet):
     url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json?iss.meta=off'
-    # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
     price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet).first()
     len_price_date = len(price_date)
     if len_price_date and (datetime.now() - price_date[0][0]).total_seconds() < 3600:
@@ -44,7 +43,6 @@ def get_average(emitet, days):
     history_price = []
     average = {}
     trade_list_dates = []
-    # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
     date_ago = (datetime.now() - timedelta(days)).date()
     yesterday = (datetime.now() - timedelta(1)).date()
     working_date = db_session.query(Calendar.date).filter(Calendar.date >= str(date_ago),
@@ -92,7 +90,6 @@ def get_average(emitet, days):
 
 
 def get_date_dividents(emitet):
-    # authorization.is_cookie_expired(authorization.get_auth())  # Проверка текущего куки на валидность
     dividents_date = db_session.query(Dividents.updated_at).filter(Dividents.sec_id == emitet).all()
     len_dividents_date = len(dividents_date)
     if len_dividents_date and dividents_date == datetime.now().date():
