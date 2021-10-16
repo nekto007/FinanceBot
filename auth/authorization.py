@@ -6,7 +6,7 @@ from models.db_models import Authorization
 
 def get_auth():
     s = requests.Session()
-    s.get(settings.MOEX_AUTH_URL, auth=HTTPBasicAuth(settings.EMAIL, settings.PASSWORD))
+    sign_up_request = s.get(settings.MOEX_AUTH_URL, auth=HTTPBasicAuth(settings.EMAIL, settings.PASSWORD))
     cookies = {'MicexPassportCert': s.cookies['MicexPassportCert']}
     token_to_db = Authorization(token=s.cookies['MicexPassportCert'])
     db_session.add(token_to_db)
@@ -15,6 +15,9 @@ def get_auth():
     #куки для запроса: {'MicexPassportCert': cookie_last}. Вынести в отдельную функцию для
     #вызова при запросах и передачи последних куки. Проверять header - если приходит Marker - denied -
     #пробовать авторизоваться и брать куки оттуда. Если продолжает приходить marker denied - продолжать дальше.
+    print(sign_up_request.headers)
+
+    return cookie_last
 
 if __name__ == '__main__':
     get_auth()

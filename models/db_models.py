@@ -27,16 +27,6 @@ class Calendar(Base):  # Таблица client_status
         return f"{self.id}, {self.date}"
 
 
-class ClientStatus(Base):  # Таблица client_status
-    __tablename__ = "client_status"
-
-    id = Column(INTEGER, primary_key=True)
-    name = Column(VARCHAR, nullable=False)
-
-    def __repr__(self):
-        return f"{self.id}, {self.name}"
-
-
 class Clients(Base):  # Таблица clients
     __tablename__ = "clients"
 
@@ -49,6 +39,7 @@ class Clients(Base):  # Таблица clients
     status = Column(INTEGER, default=1)
     is_deleted = Column(Boolean, default=False)
     username = Column(VARCHAR)
+    message = Column(VARCHAR)
 
     def __repr__(self):
         return f"{self.id}, {self.telegram_id,}, {self.username}"
