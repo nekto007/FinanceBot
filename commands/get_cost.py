@@ -1,4 +1,5 @@
 from api.moex.price import get_price
+import os
 
 
 def get_cost(update, context):
@@ -10,12 +11,15 @@ def get_cost(update, context):
         price = get_price(ticket)
         if price is not None:
             update.message.reply_text(
-                f'Наименование тикета: {price[0]} \n'
-                f'Стоимость акции: {(price[1])/100} \n'
-                f'Цена открытия: {price[2]/100} \n'
-                f'Цена закрытия: {price[3]/100} \n'
-                f'Максимальная стоимость за торги: {price[4]/100} \n'
-                f'Минимальная стоимость за торги: {price[5]/100} \n')
+                f'Наименование тикета: {price["ticket_name"]} \n'
+                f'Стоимость акции: {(price["current_cost"])} \n'
+                f'Цена открытия: {price["open_price"]} \n'
+                f'Цена закрытия: {price["close_price"]} \n'
+                f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
+                f'Максимальная стоимость за торги: {price["high_cost_daily"]} \n')
+            if price['graph_photo'] is not None:
+                update.message.reply_photo(open(price['graph_photo'], 'rb'))
+                os.remove(price['graph_photo'])
         else:
             update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
                                       'повторно сделать запрос.')
