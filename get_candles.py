@@ -4,7 +4,6 @@ from db.db_connect import db_session
 from models.db_models import StockHistory
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-# from api.moex.price import get_stock_history
 
 
 def get_candle(emitet, days):
