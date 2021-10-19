@@ -11,12 +11,14 @@ def get_cost(update, context):
         price = get_price(ticket)
         if price is not None:
             update.message.reply_text(
+                f'<b>Наименование компании: {price["company_name"]}\n'
                 f'Наименование тикета: {price["ticket_name"]} \n'
                 f'Стоимость акции: {(price["current_cost"])} \n'
                 f'Цена открытия: {price["open_price"]} \n'
                 f'Цена закрытия: {price["close_price"]} \n'
                 f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
-                f'Максимальная стоимость за торги: {price["high_cost_daily"]} \n')
+                f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
+                , parse_mode='HTML')
             if price['graph_photo'] is not None:
                 update.message.reply_photo(open(price['graph_photo'], 'rb'))
                 os.remove(price['graph_photo'])

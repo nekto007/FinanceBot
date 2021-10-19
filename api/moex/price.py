@@ -25,8 +25,9 @@ def get_price(emitet):
                 db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                 db_session.commit()
             else:
-                current_info = StockInfo(sec_id=stock_data[0], board_id='TQBR', open_price=int(stock_data[9] * 100),
-                                         close_price=int(stock_data[49] * 100),
+                current_info = StockInfo(sec_id=stock_data[0], board_id=stock_data[1],
+                                         short_name=response['securities']['data'][0][9],
+                                         open_price=int(stock_data[9] * 100), close_price=int(stock_data[49] * 100),
                                          current_cost=int(stock_data[12] * 100),
                                          low_cost_daily=int(stock_data[10] * 100),
                                          high_cost_daily=int(stock_data[11] * 100)
@@ -38,13 +39,15 @@ def get_price(emitet):
             return None
     stock_info = db_session.query(StockInfo.current_cost, StockInfo.open_price,
                                   StockInfo.close_price, StockInfo.low_cost_daily,
-                                  StockInfo.high_cost_daily).filter(StockInfo.sec_id == emitet).first()
+                                  StockInfo.high_cost_daily, StockInfo.short_name)\
+        .filter(StockInfo.sec_id == emitet).first()
     price_info['ticket_name'] = emitet
     price_info['current_cost'] = stock_info[0]/100
     price_info['open_price'] = stock_info[1]/100
     price_info['close_price'] = stock_info[2]/100
     price_info['low_cost_daily'] = stock_info[3]/100
     price_info['high_cost_daily'] = stock_info[4] / 100
+    price_info['company_name'] = stock_info[5]
     if get_stock_history(emitet, 15) is not None:
         price_info['graph_photo'] = get_graph(emitet, 15)
     else:
