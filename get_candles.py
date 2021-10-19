@@ -31,6 +31,7 @@ def get_candle(emitet, days):
                                              )],
                         layout=go.Layout(title=go.layout.Title(text=f'График движения цены эмитента {emitet}')))
         fig.update_layout(xaxis_rangeslider_visible=False, xaxis=dict(type='category'))
+        fig.update_xaxes(tickangle=90)
         file_name = f'images/candle_{datetime.now().strftime("%s")}.jpeg'
         fig.write_image(file_name)
         go.Figure()
@@ -53,6 +54,7 @@ def get_graph(emitet, days):
         fig = go.Figure(data=[go.Scatter(x=sd["dates"], y=sd["close_cost"])],
                         layout=go.Layout(title=go.layout.Title(text=f'График движения цены эмитента {emitet}')))
         fig.update_layout(xaxis_rangeslider_visible=False, xaxis=dict(type='category'))
+        fig.update_xaxes(tickangle=90)
         file_name = f'images/graph_{datetime.now().strftime("%s")}.jpeg'
         fig.write_image(file_name)
         go.Figure()
