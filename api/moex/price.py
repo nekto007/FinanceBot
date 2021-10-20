@@ -15,22 +15,22 @@ def get_price(emitet):
         pass
     else:
         response = requests.get(url, cookies=authorization.get_auth()).json()
-        stock_data = response['marketdata']['data'][0]
-        if len(response['marketdata']['data']):
+        stock_data = response['marketdata']['data']
+        if len(stock_data):
             count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
             if count_string:
-                stock_info = {'open_price': int(stock_data[9] * 100), 'close_price': int(stock_data[49] * 100),
-                              'current_cost': int(stock_data[12] * 100), 'low_cost_daily': int(stock_data[10] * 100),
-                              'high_cost_daily': int(stock_data[11] * 100), 'updated_at': datetime.now()}
+                stock_info = {'open_price': int(stock_data[0][9] * 100), 'close_price': int(stock_data[0][49] * 100),
+                              'current_cost': int(stock_data[0][12] * 100), 'low_cost_daily': int(stock_data[0][10] * 100),
+                              'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
                 db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                 db_session.commit()
             else:
-                current_info = StockInfo(sec_id=stock_data[0], board_id=stock_data[1],
+                current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
                                          short_name=response['securities']['data'][0][9],
-                                         open_price=int(stock_data[9] * 100), close_price=int(stock_data[49] * 100),
-                                         current_cost=int(stock_data[12] * 100),
-                                         low_cost_daily=int(stock_data[10] * 100),
-                                         high_cost_daily=int(stock_data[11] * 100)
+                                         open_price=int(stock_data[0][9] * 100), close_price=int(stock_data[0][49] * 100),
+                                         current_cost=int(stock_data[0][12] * 100),
+                                         low_cost_daily=int(stock_data[0][10] * 100),
+                                         high_cost_daily=int(stock_data[0][11] * 100)
                                          )
                 db_session.add(current_info)
                 db_session.commit()
