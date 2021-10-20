@@ -7,9 +7,9 @@ def get_list_tickers(update, context):
         ticker_info = get_all_tickers(emitet=text[1])
         if ticker_info is not None:
             update.message.reply_text(
-                f'<b>Наименование компании: {ticker_info[1]}\n'
-                f'Наименование тикета: {ticker_info[0]}\n'
-                f'Наименование биржи: {(ticker_info[2])} </b>\n'
+                f'<b>Наименование компании: {ticker_info[0][1]}\n'
+                f'Наименование тикета: {ticker_info[0][0]}\n'
+                f'Наименование биржи: {(ticker_info[0][2])} </b>\n'
                 , parse_mode='HTML')
         else:
             update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
