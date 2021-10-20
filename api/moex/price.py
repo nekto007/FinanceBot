@@ -2,7 +2,7 @@ import requests
 from auth import authorization
 from datetime import datetime, timedelta
 from db.db_connect import db_session
-from models.db_models import StockInfo, Dividents, StockHistory, Calendar
+from models.db_models import StockInfo, Dividents, StockHistory, Calendar, StockTickers
 from get_candles import get_candle, get_graph
 from sqlalchemy.exc import IntegrityError
 
@@ -20,14 +20,16 @@ def get_price(emitet):
             count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
             if count_string:
                 stock_info = {'open_price': int(stock_data[0][9] * 100), 'close_price': int(stock_data[0][49] * 100),
-                              'current_cost': int(stock_data[0][12] * 100), 'low_cost_daily': int(stock_data[0][10] * 100),
+                              'current_cost': int(stock_data[0][12] * 100),
+                              'low_cost_daily': int(stock_data[0][10] * 100),
                               'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
                 db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                 db_session.commit()
             else:
                 current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
                                          short_name=response['securities']['data'][0][9],
-                                         open_price=int(stock_data[0][9] * 100), close_price=int(stock_data[0][49] * 100),
+                                         open_price=int(stock_data[0][9] * 100),
+                                         close_price=int(stock_data[0][49] * 100),
                                          current_cost=int(stock_data[0][12] * 100),
                                          low_cost_daily=int(stock_data[0][10] * 100),
                                          high_cost_daily=int(stock_data[0][11] * 100)
@@ -39,13 +41,13 @@ def get_price(emitet):
             return None
     stock_info = db_session.query(StockInfo.current_cost, StockInfo.open_price,
                                   StockInfo.close_price, StockInfo.low_cost_daily,
-                                  StockInfo.high_cost_daily, StockInfo.short_name)\
+                                  StockInfo.high_cost_daily, StockInfo.short_name) \
         .filter(StockInfo.sec_id == emitet).first()
     price_info['ticket_name'] = emitet
-    price_info['current_cost'] = stock_info[0]/100
-    price_info['open_price'] = stock_info[1]/100
-    price_info['close_price'] = stock_info[2]/100
-    price_info['low_cost_daily'] = stock_info[3]/100
+    price_info['current_cost'] = stock_info[0] / 100
+    price_info['open_price'] = stock_info[1] / 100
+    price_info['close_price'] = stock_info[2] / 100
+    price_info['low_cost_daily'] = stock_info[3] / 100
     price_info['high_cost_daily'] = stock_info[4] / 100
     price_info['company_name'] = stock_info[5]
     if get_stock_history(emitet, 15) is not None:
@@ -143,5 +145,32 @@ def get_date_dividents(emitet):
     return dividents_info[0][0]
 
 
+def get_all_tickers(emitet=''):
+    price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX').first()
+    if price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 86400:
+        pass
+    else:
+        url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off'
+        response = requests.get(url, cookies=authorization.get_auth()).json()
+        tickers_data = response['securities']['data']
+        for ticker in tickers_data:
+            current_info = StockTickers(sec_id=ticker[0],
+                                        company_name=ticker[9],
+                                        name_stock='MOEX'
+                                        )
+            db_session.add(current_info)
+            db_session.commit()
+    if not emitet:
+        tickers_info = db_session.query(StockTickers.sec_id)
+    else:
+        tickers_info = db_session.query(StockTickers.sec_id, StockTickers.company_name, StockTickers.name_stock)\
+            .filter(StockTickers.sec_id == emitet.upper()).all()[0]
+    db_session.close()
+    return tickers_info
+
+
 if __name__ == "__main__":
-    get_price('tatn'.upper())
+    tickers = get_all_tickers()
+    print(tickers)
+    for i in tickers:
+        print(i[0])
