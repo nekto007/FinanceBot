@@ -164,13 +164,12 @@ def get_all_tickers(emitet=''):
         tickers_info = db_session.query(StockTickers.sec_id)
     else:
         tickers_info = db_session.query(StockTickers.sec_id, StockTickers.company_name, StockTickers.name_stock)\
-            .filter(StockTickers.sec_id == emitet.upper()).all()[0]
+            .filter(StockTickers.sec_id == emitet.upper()).all()
+        if not len(tickers_info):
+            return None
     db_session.close()
     return tickers_info
 
 
 if __name__ == "__main__":
-    tickers = get_all_tickers()
-    print(tickers)
-    for i in tickers:
-        print(i[0])
+    pass
