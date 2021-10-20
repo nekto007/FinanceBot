@@ -95,6 +95,7 @@ class StockInfo(Base):
     updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
+    short_name = Column(VARCHAR)
     open_price = Column(INTEGER(), comment='Цена открытия торгой')
     close_price = Column(INTEGER(), comment='Цена закрытия торгов')
     current_cost = Column(INTEGER(), comment='Текущая стоимость')

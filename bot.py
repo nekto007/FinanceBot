@@ -31,6 +31,7 @@ def main():
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(MessageHandler(Filters.text, client_info))
+
     mybot.start_polling()
     mybot.idle()
 
