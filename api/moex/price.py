@@ -16,7 +16,7 @@ def get_price(emitet):
     else:
         response = requests.get(url, cookies=authorization.get_auth()).json()
         stock_data = response['marketdata']['data'][0]
-        if len(stock_data):
+        if len(response['marketdata']['data']):
             count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
             if count_string:
                 stock_info = {'open_price': int(stock_data[9] * 100), 'close_price': int(stock_data[49] * 100),
