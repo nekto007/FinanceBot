@@ -171,5 +171,15 @@ def get_all_tickers(emitet=''):
     return tickers_info
 
 
+def get_currency_api():
+    currency_info = {}
+    url = 'https://iss.moex.com/iss/statistics/engines/futures/markets/indicativerates/securities.json?iss.meta=off'
+    response = requests.get(url)
+    currency_data = response.json()['securities']['data']
+    for _x in currency_data:
+        currency_info[_x[2]]=_x[3]
+    return currency_info
+
+
 if __name__ == "__main__":
     pass
