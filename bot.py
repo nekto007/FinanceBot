@@ -6,6 +6,9 @@ from commands import get_cost, trand, get_cookie
 from commands import average15, average50, get_dividents, get_tickers
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from client_info import client_info
+from bot import helper
+
+from commands import get_currency
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -31,8 +34,9 @@ def main():
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("info", get_tickers.get_list_tickers))
+    dp.add_handler(CommandHandler("help", helper.help))
+    dp.add_handler(CommandHandler("currency", get_currency.get_currency))
     dp.add_handler(MessageHandler(Filters.text, client_info))
-
     mybot.start_polling()
     mybot.idle()
 
