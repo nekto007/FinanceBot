@@ -1,6 +1,7 @@
 from api.moex.price import get_all_tickers
 import datetime
 
+
 def get_list_tickers(update, context):
     text = update.message.text.split()
     if len(text) == 2:
@@ -14,7 +15,7 @@ def get_list_tickers(update, context):
                 f'Наименование биржи: {(ticker_info[2])} </b>\n'
                 , parse_mode='HTML')
         else:
-            update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
+            update.message.reply_text(f'По запросу {text[1]} ничего не найдено. Попробуйте изменить название акции и '
                                       'повторно сделать запрос.')
 
     else:
@@ -24,5 +25,5 @@ def get_list_tickers(update, context):
             tickers_info.append(ticker)
         update.message.reply_text(
             f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
-            f'Список акции торгующихся на бирже: </b>{", ".join(tickers_info)} \n'
+            f'Список акций торгующихся на бирже: </b>{", ".join(tickers_info)} \n'
             , parse_mode='HTML')
