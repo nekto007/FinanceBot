@@ -115,12 +115,13 @@ class StockTickers(Base):
     id = Column(INTEGER, primary_key=True)
     created_at = Column(TIMESTAMP, nullable=False, default=now())
     updated_at = Column(TIMESTAMP, nullable=False, default=now())
-    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
+    sec_id = Column(VARCHAR, nullable=False, unique=True, comment='Идентификатор финансового инструмента')
     company_name = Column(VARCHAR)
     name_stock = Column(VARCHAR)
 
     def __repr__(self):
         return f"{self.updated_at},{self.sec_id}"
+
 
 class Trands(Base):
     __tablename__ = 'trands'
