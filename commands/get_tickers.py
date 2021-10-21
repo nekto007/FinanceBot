@@ -24,5 +24,5 @@ def get_list_tickers(update, context):
             tickers_info.append(ticker)
         update.message.reply_text(
             f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
-            f'Список Акции торгующихся на бирже: </b>{", ".join(tickers_info)} \n'
+            f'Список акции торгующихся на бирже: </b>{", ".join(tickers_info)} \n'
             , parse_mode='HTML')
