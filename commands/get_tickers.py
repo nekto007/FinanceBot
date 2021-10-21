@@ -4,7 +4,7 @@ import datetime
 def get_list_tickers(update, context):
     text = update.message.text.split()
     if len(text) == 2:
-        ticker_info = get_all_tickers(emitet=text[1])
+        ticker_info = get_all_tickers(emitet=text[1])[0]
         print('ticker_info', ticker_info)
         if ticker_info is not None:
             update.message.reply_text(
