@@ -3,7 +3,7 @@ from configs import settings
 
 from auth import authorization
 from commands import get_cost, trand, get_cookie
-from commands import average15, average50, get_dividents, get_tickers, get_average
+from commands import get_dividents, get_tickers, get_average
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from client_info import client_info
 from bot import helper
