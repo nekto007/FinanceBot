@@ -67,7 +67,6 @@ def get_price(emitet):
 def get_average(emitet, days):
     all_tickers = get_all_tickers()
     if emitet in all_tickers:
-        print('rrr')
         history_price = []
         average = {}
 
@@ -157,7 +156,11 @@ def get_date_dividents(emitet):
 
 
 def get_all_tickers(emitet=''):
-    price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX').first()
+    if not emitet:
+        price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX').first()
+    else:
+        price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX',
+                                                                      StockTickers.sec_id == emitet).first()
     if price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 86400:
         pass
     else:
@@ -165,21 +168,30 @@ def get_all_tickers(emitet=''):
         response = requests.get(url, cookies=authorization.get_auth()).json()
         tickers_data = response['securities']['data']
         for ticker in tickers_data:
-            current_info = StockTickers(sec_id=ticker[0],
-                                        company_name=ticker[9],
-                                        name_stock='MOEX'
-                                        )
-            db_session.add(current_info)
+            if price_date is not None and ticker[0] in price_date:
+                current_info = {'sec_id': ticker[0],
+                                'updated_at': datetime.now().date()}
+                db_session.query(Dividents).filter_by(sec_id=emitet).update(current_info)
+            else:
+                current_info = StockTickers(sec_id=ticker[0],
+                                            company_name=ticker[9],
+                                            name_stock='MOEX'
+                                            )
+                db_session.add(current_info)
             db_session.commit()
     if not emitet:
-        tickers_info = db_session.query(StockTickers.sec_id)
+        tickers_info = []
+        tickers_data = db_session.query(StockTickers.sec_id).all()
+        for ticker in tickers_data:
+            tickers_info.append(ticker[0])
+        return tickers_info
     else:
         tickers_info = db_session.query(StockTickers.sec_id, StockTickers.company_name, StockTickers.name_stock) \
             .filter(StockTickers.sec_id == emitet.upper()).all()
         if not len(tickers_info):
             return None
-    db_session.close()
-    return tickers_info
+        db_session.close()
+        return tickers_info
 
 
 def get_currency_api():
