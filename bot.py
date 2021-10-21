@@ -3,7 +3,7 @@ from configs import settings
 
 from auth import authorization
 from commands import get_cost, trand, get_cookie
-from commands import average15, average50, get_dividents, get_tickers
+from commands import average15, average50, get_dividents, get_tickers, get_average
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from client_info import client_info
 from bot import helper
@@ -29,8 +29,8 @@ def main():
     dp.add_handler(CommandHandler("div", get_dividents.get_dividents_info))
     dp.add_handler(CommandHandler("trand", trand.get_trand_status))
     dp.add_handler(CommandHandler("price", get_cost.get_cost))
-    dp.add_handler(CommandHandler("average15", average15.get_15_days_average))
-    dp.add_handler(CommandHandler("average50", average50.get_50_days_average))
+    dp.add_handler(CommandHandler("average15", get_average.get_days_average))
+    dp.add_handler(CommandHandler("average50", get_average.get_days_average))
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("info", get_tickers.get_list_tickers))
