@@ -20,7 +20,7 @@ def get_price(emitet):
             response = requests.get(url, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data']
             if len(stock_data):
-                count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet).count()
+                count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
                     stock_info = {'open_price': int(stock_data[0][9] * 100),
                                   'close_price': int(stock_data[0][49] * 100),
@@ -46,7 +46,7 @@ def get_price(emitet):
         stock_info = db_session.query(StockInfo.current_cost, StockInfo.open_price,
                                       StockInfo.close_price, StockInfo.low_cost_daily,
                                       StockInfo.high_cost_daily, StockInfo.short_name) \
-            .filter(StockInfo.sec_id == emitet).first()
+            .filter(StockInfo.sec_id == emitet.upper()).first()
         price_info['ticket_name'] = emitet
         price_info['current_cost'] = stock_info[0] / 100
         price_info['open_price'] = stock_info[1] / 100
@@ -88,7 +88,7 @@ def get_average(emitet, days):
         for history_close_cost in history_close_costs:
             history_price.append(history_close_cost[0] / 100)
         average['ticket_name'] = emitet
-        average['company_name'] = db_session.query(StockHistory.short_name).filter(StockHistory.sec_id == emitet) \
+        average['company_name'] = db_session.query(StockHistory.short_name).filter(StockHistory.sec_id == emitet.upper()) \
             .first()[0]
         average['average'] = round(sum(history_price) / len(history_price), 3)
         average['candle_photo'] = get_candle(emitet, days)
@@ -131,10 +131,10 @@ def get_stock_history(emitet, days):
 
 
 def get_date_dividents(emitet):
-    dividents_date = db_session.query(Dividents.updated_at).filter(Dividents.sec_id == emitet).all()
+    dividents_date = db_session.query(Dividents.updated_at).filter(Dividents.sec_id == emitet.upper()).all()
     len_dividents_date = len(dividents_date)
     if len_dividents_date and dividents_date == datetime.now().date():
-        dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet).all()
+        dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet.upper()).all()
         return dividents_info[0][0]
     url = f'https://iss.moex.com/iss/securities/{emitet}/dividends.json'
     response = requests.get(url, cookies=authorization.get_auth()).json()
@@ -150,7 +150,7 @@ def get_date_dividents(emitet):
         db_session.commit()
     else:
         return None
-    dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet)
+    dividents_info = db_session.query(Dividents.dividents_data).filter(Dividents.sec_id == emitet.upper())
     db_session.close()
     return dividents_info[0][0]
 
@@ -160,7 +160,7 @@ def get_all_tickers(emitet=''):
         price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX').first()
     else:
         price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX',
-                                                                      StockTickers.sec_id == emitet).first()
+                                                                      StockTickers.sec_id == emitet.upper()).first()
     if price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 86400:
         pass
     else:

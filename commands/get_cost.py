@@ -1,5 +1,4 @@
 import datetime
-
 from api.moex.price import get_price
 import os
 

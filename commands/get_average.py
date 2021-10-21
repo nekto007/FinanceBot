@@ -1,5 +1,6 @@
 from api.moex.price import get_average
 import os
+import datetime
 
 
 def get_days_average(update, context):
@@ -14,6 +15,7 @@ def get_days_average(update, context):
             print('average', average)
             if average is not None:
                 update.message.reply_text(
+                    f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
                     f'Наименование компании: {average["company_name"]} \n'
                     f'Наименование тикета: {average["ticket_name"]} \n'
                     f'Значение скользящей за 15 дней: {average["average"]}')
