@@ -13,6 +13,8 @@ def get_50_days_average(update, context):
                 f'Наименование компании: {average["company_name"]} \n'
                 f'Наименование тикета: {average["ticket_name"]} \n'
                 f'Значение скользящей за 50 дней: {average["average"]}')
+            if average['candle_photo'] is not None:
+                update.message.reply_photo(open(average['candle_photo'], 'rb'))
         else:
             update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
                                       'повторно сделать запрос.')

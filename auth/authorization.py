@@ -16,4 +16,4 @@ def get_auth():
 
 
 if __name__ == '__main__':
-    print(get_auth())
+    pass

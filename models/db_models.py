@@ -95,6 +95,7 @@ class StockInfo(Base):
     updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     board_id = Column(VARCHAR, nullable=False, comment='Идентификатор режима торгов')
+    short_name = Column(VARCHAR)
     open_price = Column(INTEGER(), comment='Цена открытия торгой')
     close_price = Column(INTEGER(), comment='Цена закрытия торгов')
     current_cost = Column(INTEGER(), comment='Текущая стоимость')
@@ -105,6 +106,21 @@ class StockInfo(Base):
         return f'{self.sec_id}, {self.current_cost}, {self.open_price}, {self.close_price}, {self.high_cost_daily},' \
                f' {self.low_cost_daily}'
 
+
+class StockTickers(Base):
+    __tablename__ = "stock_tickers"
+    __tableargs__ = {'comment': 'Информация о компаниях торгующихся на бирже'
+                     }
+
+    id = Column(INTEGER, primary_key=True)
+    created_at = Column(TIMESTAMP, nullable=False, default=now())
+    updated_at = Column(TIMESTAMP, nullable=False, default=now())
+    sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
+    company_name = Column(VARCHAR)
+    name_stock = Column(VARCHAR)
+
+    def __repr__(self):
+        return f"{self.updated_at},{self.sec_id}"
 
 class Trands(Base):
     __tablename__ = 'trands'

@@ -24,5 +24,6 @@ def get_trand_status(update, context):
             update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
                                       'повторно сделать запрос.')
 
+
 if __name__ == '__main__':
     pass
