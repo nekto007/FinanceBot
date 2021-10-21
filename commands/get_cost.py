@@ -1,3 +1,5 @@
+import datetime
+
 from api.moex.price import get_price
 import os
 
@@ -11,7 +13,8 @@ def get_cost(update, context):
         price = get_price(ticket)
         if price is not None:
             update.message.reply_text(
-                f'<b>Наименование компании: {price["company_name"]}\n'
+                f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
+                f'Наименование компании: {price["company_name"]}\n'
                 f'Наименование тикета: {price["ticket_name"]} \n'
                 f'Стоимость акции: {(price["current_cost"])} \n'
                 f'Цена открытия: {price["open_price"]} \n'

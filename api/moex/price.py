@@ -91,7 +91,7 @@ def get_average(emitet, days):
 def get_stock_history(emitet, days):
     trade_list_dates = []
     date_ago = (datetime.now() - timedelta(days)).date()
-    yesterday = (datetime.now() - timedelta(1)).date()
+    yesterday = (datetime.now() - timedelta(0)).date()
     url = f'https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/{emitet}' \
           f'.json?from={date_ago}&till={yesterday} '
     response = requests.get(url, cookies=authorization.get_auth()).json()
