@@ -37,7 +37,6 @@ def main():
     dp.add_handler(CommandHandler("help", helper.help))
     dp.add_handler(CommandHandler("currency", get_currency.get_currency))
     dp.add_handler(MessageHandler(Filters.text, client_info))
-
     mybot.start_polling()
     mybot.idle()
 
