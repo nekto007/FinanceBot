@@ -1,5 +1,6 @@
-from api.moex.price import get_all_tickers
 import datetime
+
+from api.moex.price import get_all_tickers
 
 
 def get_list_tickers(update, context):

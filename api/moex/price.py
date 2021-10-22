@@ -1,10 +1,24 @@
+from datetime import (
+    datetime,
+    timedelta,
+)
+
 import requests
-from auth import authorization
-from datetime import datetime, timedelta
-from db.db_connect import db_session
-from models.db_models import StockInfo, Dividents, StockHistory, Calendar, StockTickers
-from get_candles import get_candle, get_graph
 from sqlalchemy.exc import IntegrityError
+
+from auth import authorization
+from db.db_connect import db_session
+from get_candles import (
+    get_candle,
+    get_graph,
+)
+from models.db_models import (
+    Calendar,
+    Dividents,
+    StockHistory,
+    StockInfo,
+    StockTickers,
+)
 
 
 def get_price(emitet):
@@ -12,18 +26,15 @@ def get_price(emitet):
     all_tickers = get_all_tickers()
     if emitet in all_tickers:
         price_date = db_session.query(StockInfo.updated_at).filter(StockInfo.sec_id == emitet.upper()).first()
-        if price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 3600:
-            pass
-        else:
-            url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}' \
-                  f'.json?iss.meta=off'
-            response = requests.get(url, cookies=authorization.get_auth()).json()
+        if not (price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 3600):
+            url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json'
+            parameters = {'iss.meta': 'off'}
+            response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data']
             if len(stock_data):
                 count_string = db_session.query(StockInfo, StockInfo.id).filter(
                     StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
-                    print(stock_data[0])
                     if stock_data[0][49] is not None:
                         close_price = int(stock_data[0][49] * 100)
                     else:
@@ -70,8 +81,6 @@ def get_price(emitet):
             price_info['graph_photo'] = None
         db_session.close()
         return price_info
-    else:
-        return None
 
 
 def get_average(emitet, days):
@@ -95,8 +104,7 @@ def get_average(emitet, days):
         history_close_costs = db_session.query(StockHistory.close_cost).filter(StockHistory.sec_id == emitet,
                                                                                StockHistory.trade_date >= str(
                                                                                    date_ago)).all()
-        for history_close_cost in history_close_costs:
-            history_price.append(history_close_cost[0] / 100)
+        history_price = [history_close_cost[0] / 100 for history_close_cost in history_close_costs]
         average['ticket_name'] = emitet
         average['company_name'] = \
             db_session.query(StockHistory.short_name).filter(StockHistory.sec_id == emitet.upper()) \
@@ -105,21 +113,19 @@ def get_average(emitet, days):
         average['candle_photo'] = get_candle(emitet, days)
         db_session.close()
         return average
-    else:
-        return None
 
 
 def get_stock_history(emitet, days):
     trade_list_dates = []
     date_ago = (datetime.now() - timedelta(days)).date()
     yesterday = (datetime.now() - timedelta(1)).date()
-    url = f'https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/{emitet}' \
-          f'.json?from={date_ago}&till={yesterday} '
-    response = requests.get(url, cookies=authorization.get_auth()).json()
+    url = f'https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/{emitet}.json?'
+    parameters = {'from': date_ago, 'till': yesterday}
+    response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
     history_data = response['history']['data']
     if len(history_data) != 0:
         for element in history_data:
-            if element[1] not in trade_list_dates:
+            if element[1] not in trade_list_dates and element[6] is not None:
                 stock_history = StockHistory(board_id=element[0],
                                              trade_date=element[1],
                                              short_name=element[2], sec_id=element[3],
@@ -172,11 +178,10 @@ def get_all_tickers(emitet=''):
     else:
         price_date = db_session.query(StockTickers.updated_at).filter(StockTickers.name_stock == 'MOEX',
                                                                       StockTickers.sec_id == emitet.upper()).first()
-    if price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 86400:
-        pass
-    else:
-        url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off'
-        response = requests.get(url, cookies=authorization.get_auth()).json()
+    if not (price_date is not None and (datetime.now() - price_date[0]).total_seconds() < 86400):
+        url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json'
+        parameters = {'iss.meta': 'off'}
+        response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
         tickers_data = response['securities']['data']
         for ticker in tickers_data:
             if price_date is not None and ticker[0] in price_date:
@@ -189,7 +194,10 @@ def get_all_tickers(emitet=''):
                                             name_stock='MOEX'
                                             )
                 db_session.add(current_info)
-            db_session.commit()
+            try:
+                db_session.commit()
+            except IntegrityError:
+                db_session.rollback()
     if not emitet:
         tickers_info = []
         tickers_data = db_session.query(StockTickers.sec_id).all()
@@ -216,4 +224,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    print(get_price('tatn'.upper()))
+    pass

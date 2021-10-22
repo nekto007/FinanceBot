@@ -1,6 +1,7 @@
 import datetime
-from api.moex.price import get_price
 import os
+
+from api.moex.price import get_price
 
 
 def get_cost(update, context):
@@ -10,7 +11,7 @@ def get_cost(update, context):
     else:
         tickets = text[1:]
         for ticket in tickets:
-            price = get_price(ticket.upper())
+            price = get_price(ticket.replace(',', '').upper())
             if price is not None:
                 if price["close_price"]:
                     close_price = f'Цена закрытия: {price["close_price"]} \n'
@@ -27,8 +28,9 @@ def get_cost(update, context):
                     f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
                     , parse_mode='HTML')
                 if price['graph_photo'] is not None:
-                    update.message.reply_photo(open(price['graph_photo'], 'rb'))
-                    os.remove(price['graph_photo'])
+                    with open(price['graph_photo'], 'rb') as graph_photo:
+                        update.message.reply_photo(graph_photo)
+                        os.remove(price['graph_photo'])
             else:
                 update.message.reply_text(f'По запросу: {ticket} ничего не найдено. Попробуйте изменить '
                                           f'название акции и '

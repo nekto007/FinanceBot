@@ -1,14 +1,25 @@
 import logging
-from configs import settings
+
+from telegram.ext import (
+    CommandHandler,
+    Filters,
+    MessageHandler,
+    Updater,
+)
 
 from auth import authorization
-from commands import get_cost, trand, get_cookie
-from commands import get_dividents, get_tickers, get_average
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from client_info import client_info
 from bot import helper
-
-from commands import get_currency
+from client_info import client_info
+from commands import (
+    get_average,
+    get_cookie,
+    get_cost,
+    get_currency,
+    get_dividents,
+    get_tickers,
+    trand,
+)
+from configs import settings
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
