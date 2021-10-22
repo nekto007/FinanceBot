@@ -12,13 +12,17 @@ def get_cost(update, context):
         for ticket in tickets:
             price = get_price(ticket.upper())
             if price is not None:
+                if price["close_price"]:
+                    close_price = f'Цена закрытия: {price["close_price"]} \n'
+                else:
+                    close_price = f''
                 update.message.reply_text(
                     f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
                     f'Наименование компании: {price["company_name"]}\n'
                     f'Наименование тикета: {price["ticket_name"]} \n'
                     f'Стоимость акции: {(price["current_cost"])} \n'
                     f'Цена открытия: {price["open_price"]} \n'
-                    f'Цена закрытия: {price["close_price"]} \n'
+                    f'{close_price}'
                     f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
                     f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
                     , parse_mode='HTML')

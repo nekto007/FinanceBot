@@ -20,20 +20,30 @@ def get_price(emitet):
             response = requests.get(url, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data']
             if len(stock_data):
-                count_string = db_session.query(StockInfo, StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
+                count_string = db_session.query(StockInfo, StockInfo.id).filter(
+                    StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
+                    print(stock_data[0])
+                    if stock_data[0][49] is not None:
+                        close_price = int(stock_data[0][49] * 100)
+                    else:
+                        close_price = 0
                     stock_info = {'open_price': int(stock_data[0][9] * 100),
-                                  'close_price': int(stock_data[0][49] * 100),
+                                  'close_price': close_price,
                                   'current_cost': int(stock_data[0][12] * 100),
                                   'low_cost_daily': int(stock_data[0][10] * 100),
                                   'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
                     db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
                     db_session.commit()
                 else:
+                    if stock_data[0][49] is not None:
+                        close_price = int(stock_data[0][49] * 100)
+                    else:
+                        close_price = 0
                     current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
                                              short_name=response['securities']['data'][0][9],
                                              open_price=int(stock_data[0][9] * 100),
-                                             close_price=int(stock_data[0][49] * 100),
+                                             close_price=close_price,
                                              current_cost=int(stock_data[0][12] * 100),
                                              low_cost_daily=int(stock_data[0][10] * 100),
                                              high_cost_daily=int(stock_data[0][11] * 100)
@@ -88,8 +98,9 @@ def get_average(emitet, days):
         for history_close_cost in history_close_costs:
             history_price.append(history_close_cost[0] / 100)
         average['ticket_name'] = emitet
-        average['company_name'] = db_session.query(StockHistory.short_name).filter(StockHistory.sec_id == emitet.upper()) \
-            .first()[0]
+        average['company_name'] = \
+            db_session.query(StockHistory.short_name).filter(StockHistory.sec_id == emitet.upper()) \
+                .first()[0]
         average['average'] = round(sum(history_price) / len(history_price), 3)
         average['candle_photo'] = get_candle(emitet, days)
         db_session.close()
@@ -205,4 +216,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    pass
+    print(get_price('tatn'.upper()))
