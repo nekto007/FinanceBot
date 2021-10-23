@@ -9,7 +9,7 @@ def get_days_average(update, context):
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
     else:
-        tickets = text[1:]
+        tickets = text[1:6]
         days = text[0][-2:]
         for ticket in tickets:
             average = get_average(ticket.upper(), int(days))

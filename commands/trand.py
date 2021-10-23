@@ -8,7 +8,7 @@ def get_trand_status(update, context):
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
     else:
-        tickets = text[1:]
+        tickets = text[1:6]
         for ticket in tickets:
             average_15 = get_average(ticket.upper(), 15)
             if average_15 is not None:
