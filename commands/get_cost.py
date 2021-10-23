@@ -32,9 +32,9 @@ def get_cost(update, context):
                         update.message.reply_photo(graph_photo)
                         os.remove(price['graph_photo'])
             else:
-                update.message.reply_text(f'По запросу: {ticket} ничего не найдено. Попробуйте изменить '
-                                          f'название акции и '
-                                          'повторно сделать запрос.')
+                update.message.reply_text(
+                    f'По запросу: {ticket} ничего не найдено или не было торгов по выбранной акции.'
+                    f' Попробуйте изменить название акции и повторно сделать запрос или сделать запрос завтра.')
 
 
 if __name__ == '__main__':

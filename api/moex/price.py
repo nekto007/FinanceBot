@@ -35,32 +35,30 @@ def get_price(emitet):
                 count_string = db_session.query(StockInfo, StockInfo.id).filter(
                     StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
-                    if stock_data[0][49] is not None:
-                        close_price = int(stock_data[0][49] * 100)
+                    if stock_data[0][9] is not None:
+                        stock_info = {'open_price': int(stock_data[0][9] * 100),
+                                      'close_price': int(stock_data[0][49] * 100),
+                                      'current_cost': int(stock_data[0][12] * 100),
+                                      'low_cost_daily': int(stock_data[0][10] * 100),
+                                      'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
+                        db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
+                        db_session.commit()
                     else:
-                        close_price = 0
-                    stock_info = {'open_price': int(stock_data[0][9] * 100),
-                                  'close_price': close_price,
-                                  'current_cost': int(stock_data[0][12] * 100),
-                                  'low_cost_daily': int(stock_data[0][10] * 100),
-                                  'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
-                    db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
-                    db_session.commit()
+                        return None
                 else:
-                    if stock_data[0][49] is not None:
-                        close_price = int(stock_data[0][49] * 100)
+                    if stock_data[0][9] is not None:
+                        current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
+                                                 short_name=response['securities']['data'][0][9],
+                                                 open_price=int(stock_data[0][9] * 100),
+                                                 close_price=int(stock_data[0][49] * 100),
+                                                 current_cost=int(stock_data[0][12] * 100),
+                                                 low_cost_daily=int(stock_data[0][10] * 100),
+                                                 high_cost_daily=int(stock_data[0][11] * 100)
+                                                 )
+                        db_session.add(current_info)
+                        db_session.commit()
                     else:
-                        close_price = 0
-                    current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
-                                             short_name=response['securities']['data'][0][9],
-                                             open_price=int(stock_data[0][9] * 100),
-                                             close_price=close_price,
-                                             current_cost=int(stock_data[0][12] * 100),
-                                             low_cost_daily=int(stock_data[0][10] * 100),
-                                             high_cost_daily=int(stock_data[0][11] * 100)
-                                             )
-                    db_session.add(current_info)
-                    db_session.commit()
+                        return None
             else:
                 db_session.close()
                 return None
@@ -224,4 +222,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    pass
+    print(get_price('ALNU'))
