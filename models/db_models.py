@@ -139,6 +139,19 @@ class Trands(Base):
         return f'{self.id}, {self.sec_id}'
 
 
+class Cron(Base):
+    __tablename__ = 'cron'
+    __tableargs__ = {'comment': 'уведомления по расписанию'}
+
+    id = Column(INTEGER, primary_key=True)
+    chat_id = Column(VARCHAR, unique=True, nullable=False)
+    sec_id = Column(VARCHAR, nullable=False)
+    alert_command = Column(VARCHAR, nullable=False)
+    time_run = Column(VARCHAR, default=0)
+
+    def __repr__(self):
+        return f'{self.id}, {self.chat_id}, {self.sec_id}'
+
+
 if __name__ == "__main__":
-    engine = create_engine('sqlite:///../identifier.sqlite', echo=True)
-    Base.metadata.create_all(bind=engine)
+    pass
