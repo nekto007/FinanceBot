@@ -6,13 +6,13 @@ import schedule
 from api.moex.price import get_price
 from db.db_connect import db_session
 from models.db_models import (
-    Calendar,
+    Calendar, Cron
 )
 
 
 def job():
     calendar = db_session.query(Calendar.date).all()
-    alert_list = db_session.query(Calendar.date).all()
+    alert_list = db_session.query(Cron.date).filter_by.all()
     if datetime.now().date() in calendar:
         print(get_price('sber'.upper()))
     else:

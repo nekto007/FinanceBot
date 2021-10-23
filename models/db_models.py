@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, ForeignKey, INTEGER, VARCHAR, INTEGER, \
     TIMESTAMP, Numeric, Boolean, JSON, Date, DATETIME, Index
 from sqlalchemy.sql.functions import current_timestamp, now
-from db.db_connect import Base
+from db.db_connect import Base, engine
 
 
 class Authorization(Base):  # Таблица авторизации
@@ -148,10 +148,13 @@ class Cron(Base):
     sec_id = Column(VARCHAR, nullable=False)
     alert_command = Column(VARCHAR, nullable=False)
     time_run = Column(VARCHAR, default=0)
+    cron_status = Column(Boolean, default=True)
+    created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
+    updated_at = Column(INTEGER, default=current_timestamp, comment='Дата обновления')
 
     def __repr__(self):
         return f'{self.id}, {self.chat_id}, {self.sec_id}'
 
 
 if __name__ == "__main__":
-    pass
+    Base.metadata.create_all(bind=engine)
