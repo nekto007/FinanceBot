@@ -222,4 +222,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    print(get_price('ALNU'))
+    print(get_price('SBER'))
