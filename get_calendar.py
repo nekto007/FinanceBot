@@ -1,6 +1,5 @@
 from db.db_connect import db_session
 from models.db_models import Calendar
-from datetime import datetime, timedelta
 
 
 def add_date_to_working_calendar():

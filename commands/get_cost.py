@@ -1,5 +1,7 @@
-from api.moex.price import get_price
+import datetime
 import os
+
+from api.moex.price import get_price
 
 
 def get_cost(update, context):
@@ -7,24 +9,32 @@ def get_cost(update, context):
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
     else:
-        ticket = text[1].lower().upper()
-        price = get_price(ticket)
-        if price is not None:
-            update.message.reply_text(
-                f'<b>Наименование компании: {price["company_name"]}\n'
-                f'Наименование тикета: {price["ticket_name"]} \n'
-                f'Стоимость акции: {(price["current_cost"])} \n'
-                f'Цена открытия: {price["open_price"]} \n'
-                f'Цена закрытия: {price["close_price"]} \n'
-                f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
-                f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
-                , parse_mode='HTML')
-            if price['graph_photo'] is not None:
-                update.message.reply_photo(open(price['graph_photo'], 'rb'))
-                os.remove(price['graph_photo'])
-        else:
-            update.message.reply_text('По вашему запросу ничего не найдено. Попробуйте изменить название акции и '
-                                      'повторно сделать запрос.')
+        tickets = text[1:6]
+        for ticket in tickets:
+            price = get_price(ticket.replace(',', '').upper())
+            if price is not None:
+                if price["close_price"]:
+                    close_price = f'Цена закрытия: {price["close_price"]} \n'
+                else:
+                    close_price = f''
+                update.message.reply_text(
+                    f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
+                    f'Наименование компании: {price["company_name"]}\n'
+                    f'Наименование тикета: {price["ticket_name"]} \n'
+                    f'Стоимость акции: {(price["current_cost"])} \n'
+                    f'Цена открытия: {price["open_price"]} \n'
+                    f'{close_price}'
+                    f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
+                    f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
+                    , parse_mode='HTML')
+                if price['graph_photo'] is not None:
+                    with open(price['graph_photo'], 'rb') as graph_photo:
+                        update.message.reply_photo(graph_photo)
+                        os.remove(price['graph_photo'])
+            else:
+                update.message.reply_text(
+                    f'По запросу: {ticket} ничего не найдено или не было торгов по выбранной акции.'
+                    f' Попробуйте изменить название акции и повторно сделать запрос или сделать запрос завтра.')
 
 
 if __name__ == '__main__':

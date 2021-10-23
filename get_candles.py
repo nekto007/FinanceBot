@@ -1,9 +1,10 @@
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from datetime import (
+    datetime,
+    timedelta,
+)
 from db.db_connect import db_session
 from models.db_models import StockHistory
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 def get_candle(emitet, days):
@@ -17,7 +18,7 @@ def get_candle(emitet, days):
                                                                     StockHistory.trade_date >= str(date_ago)).all()
     if stock_scores:
         for row in stock_scores:
-            dates, open_cost, high_cost, low_cost, close_cost = row[0], row[1], row[2], row[3], row[4]
+            dates, open_cost, high_cost, low_cost, close_cost = row
             stocks_dict.setdefault('dates', []).append(dates)
             stocks_dict.setdefault('open_cost', []).append(open_cost / 100)
             stocks_dict.setdefault('high_cost', []).append(high_cost / 100)
@@ -36,7 +37,6 @@ def get_candle(emitet, days):
         fig.write_image(file_name)
         go.Figure()
         return file_name
-    return None
 
 
 def get_graph(emitet, days):
@@ -59,10 +59,7 @@ def get_graph(emitet, days):
         fig.write_image(file_name)
         go.Figure()
         return file_name
-    return None
 
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///identifier.sqlite', echo=True)
-    db_session = scoped_session(sessionmaker(bind=engine))
-    print(get_graph('tatn'.upper(), 15))
+    pass
