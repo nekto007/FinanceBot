@@ -144,9 +144,9 @@ class Cron(Base):
     __tableargs__ = {'comment': 'уведомления по расписанию'}
 
     id = Column(INTEGER, primary_key=True)
-    chat_id = Column(VARCHAR, unique=True, nullable=False)
+    chat_id = Column(VARCHAR, nullable=False)
     sec_id = Column(VARCHAR, nullable=False)
-    alert_command = Column(VARCHAR, nullable=False)
+    sum = Column(INTEGER, nullable=False)
     time_run = Column(VARCHAR, default=0)
     cron_status = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
