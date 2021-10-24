@@ -1,5 +1,5 @@
 from db.db_connect import db_session
-from models.db_models import Clients
+from db_models import Clients
 
 
 def client_info(update, context):

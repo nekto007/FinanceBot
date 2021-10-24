@@ -1,10 +1,7 @@
-import time
 from datetime import datetime
 
-from api.moex.price import get_price
 from db.db_connect import db_session
-from models.db_models import (
-    Calendar,
+from db_models import (
     Cron,
 )
 
@@ -13,7 +10,8 @@ def create_alert(emitet, cost, chat_id):
     print(emitet, chat_id)
     print(cost)
     alert_list = db_session.query(Cron.sec_id) \
-        .filter(Cron.cron_status == 1, Cron.chat_id == chat_id, Cron.sec_id == emitet, Cron.sum == cost).all()
+        .filter(Cron.cron_status == 1, Cron.chat_id == chat_id, Cron.sec_id == emitet, Cron.sum == cost
+                , Cron.cron_type == 'alert').all()
     print(alert_list)
     if alert_list:
         return True
@@ -22,6 +20,7 @@ def create_alert(emitet, cost, chat_id):
             chat_id=chat_id,
             sec_id=emitet.upper(),
             sum=int(cost)*100,
+            cron_type='alert',
             created_at=datetime.now(),
             updated_at=datetime.now())
         print(alert_list)
@@ -35,7 +34,7 @@ def remove_alert(emitet, chat_id):
         .filter(Cron.cron_status == 1, Cron.chat_id == chat_id, Cron.sec_id == emitet).all()
     if alert_list:
         disable_cron = {'cron_status': False}
-        db_session.query(Cron).filter_by(sec_id=emitet, chat_id=chat_id).update(disable_cron)
+        db_session.query(Cron).filter_by(sec_id=emitet, chat_id=chat_id, cron_type='alert').update(disable_cron)
         db_session.commit()
         return len(alert_list)
     else:
@@ -45,7 +44,7 @@ def remove_alert(emitet, chat_id):
 def list_alert(chat_id):
     print('emitet, chat_id', chat_id)
     alert_list = db_session.query(Cron.sec_id, Cron.sum) \
-        .filter(Cron.cron_status == 1, Cron.chat_id == chat_id).all()
+        .filter(Cron.cron_status == 1, Cron.chat_id == chat_id, Cron.cron_type == 'alert').all()
     if alert_list:
         return alert_list
 

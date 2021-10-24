@@ -2,7 +2,7 @@ import requests
 from configs import settings
 from requests.auth import HTTPBasicAuth
 from db.db_connect import db_session
-from models.db_models import Authorization
+from db_models import Authorization
 
 def get_auth():
     s = requests.Session()

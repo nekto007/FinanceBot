@@ -4,7 +4,7 @@ from datetime import (
     timedelta,
 )
 from db.db_connect import db_session
-from models.db_models import StockHistory
+from db_models import StockHistory
 
 
 def get_candle(emitet, days):

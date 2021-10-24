@@ -1,5 +1,5 @@
 from db.db_connect import db_session
-from models.db_models import Calendar
+from db_models import Calendar
 
 
 def add_date_to_working_calendar():
@@ -30,4 +30,5 @@ def add_date_to_working_calendar():
             pass
 
 
-add_date_to_working_calendar()
+if __name__ == '__main__':
+    pass

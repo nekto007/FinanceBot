@@ -1,8 +1,21 @@
-from sqlalchemy import create_engine
-from sqlalchemy import Column, ForeignKey, INTEGER, VARCHAR, INTEGER, \
-    TIMESTAMP, Numeric, Boolean, JSON, Date, DATETIME, Index
-from sqlalchemy.sql.functions import current_timestamp, now
-from db.db_connect import Base, engine
+from sqlalchemy import (
+    Boolean,
+    Column,
+    INTEGER,
+    Index,
+    JSON,
+    TIMESTAMP,
+    VARCHAR,
+)
+from sqlalchemy.sql.functions import (
+    current_timestamp,
+    now,
+)
+
+from db.db_connect import (
+    Base,
+    engine,
+)
 
 
 class Authorization(Base):  # Таблица авторизации
@@ -149,6 +162,7 @@ class Cron(Base):
     sum = Column(INTEGER, nullable=False)
     time_run = Column(VARCHAR, default=0)
     cron_status = Column(Boolean, default=True)
+    cron_type = Column(VARCHAR, nullable=False)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
     updated_at = Column(INTEGER, default=current_timestamp, comment='Дата обновления')
 

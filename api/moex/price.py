@@ -12,7 +12,7 @@ from images.get_candles import (
     get_candle,
     get_graph,
 )
-from models.db_models import (
+from db_models import (
     Calendar,
     Dividents,
     StockHistory,
