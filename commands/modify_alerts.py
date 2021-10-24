@@ -61,6 +61,9 @@ def get_alerts(update, context):
             update.message.reply_text(f'Оповещение сработает когда цена вырастет до {alerts_list[0][1] / 100}')
         else:
             update.message.reply_text(f'Оповещение сработает когда цена упадет до {alerts_list[0][1] / 100}')
+    else:
+        update.message.reply_text(f'<b>На данный момент твой список оповещений пустой.</b>',
+                                  parse_mode='HTML')
 
 
 if __name__ == '__main__':
