@@ -9,8 +9,9 @@ from telegram.ext import (
 
 from auth import authorization
 from bot import helper
-from client_info import client_info
+from clients.client_info import client_info
 from commands import (
+    modify_alerts,
     get_average,
     get_cookie,
     get_cost,
@@ -45,8 +46,10 @@ def main():
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("info", get_tickers.get_list_tickers))
-    dp.add_handler(CommandHandler("help", helper.help))
+    dp.add_handler(CommandHandler("alert", modify_alerts.alerts))
+    dp.add_handler(CommandHandler("list", modify_alerts.get_alerts))
     dp.add_handler(CommandHandler("curr", get_currency.get_all_currency))
+    dp.add_handler(CommandHandler("help", helper.help))
     dp.add_handler(MessageHandler(Filters.text, client_info))
     mybot.start_polling()
     mybot.idle()
