@@ -36,10 +36,13 @@ def notification(update, context):
 
 
 def get_notifications(update, context):
+    ticker_list = []
     chat_id = update.message.chat.id
-    notification_list = list_cron(chat_id, 'notification')
-    if notification_list:
-        update.message.reply_text(f'Список тикеров на обновления которых вы подписаны: {notification_list} \n')
+    ticker_notification_list = list_cron(chat_id, 'notification')
+    if ticker_notification_list:
+        for ticker in ticker_notification_list:
+            ticker_list.append(ticker[0])
+        update.message.reply_text(f'Список тикеров на обновления которых вы подписаны: {", ".join(ticker_list)} \n')
     else:
         update.message.reply_text(f'<b>На данный момент у вас нет подписок на акции.</b>',
                                   parse_mode='HTML')
