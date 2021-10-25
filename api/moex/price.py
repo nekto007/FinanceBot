@@ -8,16 +8,16 @@ from sqlalchemy.exc import IntegrityError
 
 from auth import authorization
 from db.db_connect import db_session
-from get_candles import (
-    get_candle,
-    get_graph,
-)
 from db_models import (
     Calendar,
     Dividents,
     StockHistory,
     StockInfo,
     StockTickers,
+)
+from get_candles import (
+    get_candle,
+    get_graph,
 )
 
 
@@ -36,8 +36,12 @@ def get_price(emitet):
                     StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
                     if stock_data[0][9] is not None:
+                        if stock_data[0][49]:
+                            close_price = stock_data[0][49] * 100
+                        else:
+                            close_price = ''
                         stock_info = {'open_price': int(stock_data[0][9] * 100),
-                                      'close_price': int(stock_data[0][49] * 100),
+                                      'close_price': close_price,
                                       'current_cost': int(stock_data[0][12] * 100),
                                       'low_cost_daily': int(stock_data[0][10] * 100),
                                       'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
@@ -69,7 +73,10 @@ def get_price(emitet):
         price_info['ticket_name'] = emitet
         price_info['current_cost'] = stock_info[0] / 100
         price_info['open_price'] = stock_info[1] / 100
-        price_info['close_price'] = stock_info[2] / 100
+        if stock_info[2] != '':
+            price_info['close_price'] = stock_info[2] / 100
+        else:
+            price_info['close_price'] = ''
         price_info['low_cost_daily'] = stock_info[3] / 100
         price_info['high_cost_daily'] = stock_info[4] / 100
         price_info['company_name'] = stock_info[5]
@@ -128,7 +135,7 @@ def get_stock_history(emitet, days):
                                              trade_date=element[1],
                                              short_name=element[2], sec_id=element[3],
                                              number_of_trades=int(element[4]),
-                                             value_trade=int(element[5]), open_cost=int(element[6] * 100),
+                                             value_trade=int(element[5] * 100), open_cost=int(element[6] * 100),
                                              low_cost=int(element[7] * 100), high_cost=int(element[8] * 100),
                                              close_cost=int(element[9] * 100), created_at=datetime.now(),
                                              updated_at=datetime.now()
@@ -143,6 +150,25 @@ def get_stock_history(emitet, days):
         return None
     db_session.close()
     return True
+
+
+def get_stock_history_previous_day(emitet, date):
+    get_history_date = get_stock_history(emitet, 15)
+    if get_history_date:
+        history_info = db_session.query(
+            StockHistory.short_name,
+            StockHistory.sec_id,
+            StockHistory.open_cost,
+            StockHistory.close_cost,
+            StockHistory.value_trade,
+            StockHistory.number_of_trades,
+            StockHistory.low_cost,
+            StockHistory.high_cost,
+            StockHistory.trade_date).filter(StockHistory.sec_id == emitet,
+                                            StockHistory.trade_date == str(
+                                                date)).first()
+        if len(history_info):
+            return history_info, get_graph(emitet, 15)
 
 
 def get_date_dividents(emitet):
@@ -222,4 +248,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    print(get_price('SBER'))
+    pass
