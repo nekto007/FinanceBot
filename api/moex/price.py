@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 from auth import authorization
 from db.db_connect import db_session
-from images.get_candles import (
+from get_candles import (
     get_candle,
     get_graph,
 )
