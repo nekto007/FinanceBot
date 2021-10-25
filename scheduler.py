@@ -25,6 +25,7 @@ def job():
         .filter(Cron.cron_status == 1, Cron.cron_type == 'notification').all()
     if subscribes_list:
         f'<b>Текущая дата: {datetime.now().date()}\n'
+        f'Доброе утро\n! Вы получили это сообщение, т.к. подписались на автоматическую рассылку обновлений!!!'
         for subscribe in subscribes_list:
             price = get_price(subscribe[0].upper())
             if price["close_price"]:
