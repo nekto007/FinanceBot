@@ -5,6 +5,7 @@ from datetime import (
 )
 from db.db_connect import db_session
 from db_models import StockHistory
+from configs.settings import IMAGE_PATH
 
 
 def get_candle(emitet, days):
@@ -33,7 +34,7 @@ def get_candle(emitet, days):
                         layout=go.Layout(title=go.layout.Title(text=f'График движения цены эмитента {emitet}')))
         fig.update_layout(xaxis_rangeslider_visible=False, xaxis=dict(type='category'))
         fig.update_xaxes(tickangle=90)
-        file_name = f'images/candle_{datetime.now().strftime("%s")}.jpeg'
+        file_name = f'{IMAGE_PATH}/candle_{datetime.now().strftime("%s")}.jpeg'
         fig.write_image(file_name)
         go.Figure()
         return file_name
@@ -55,7 +56,7 @@ def get_graph(emitet, days):
                         layout=go.Layout(title=go.layout.Title(text=f'График движения цены эмитента {emitet}')))
         fig.update_layout(xaxis_rangeslider_visible=False, xaxis=dict(type='category'))
         fig.update_xaxes(tickangle=90)
-        file_name = f'images/graph_{datetime.now().strftime("%s")}.jpeg'
+        file_name = f'{IMAGE_PATH}/graph_{datetime.now().strftime("%s")}.jpeg'
         fig.write_image(file_name)
         go.Figure()
         return file_name
