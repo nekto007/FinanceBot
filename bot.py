@@ -1,5 +1,4 @@
 import logging
-from cron import scheduler
 from telegram.ext import (
     CommandHandler,
     Filters,
@@ -11,13 +10,14 @@ from auth import authorization
 from bot import helper
 from clients.client_info import client_info
 from commands import (
-    modify_alerts,
+    alerts,
     get_average,
     get_cookie,
     get_cost,
     get_currency,
     get_dividents,
     get_tickers,
+    notifications,
     trand,
 )
 from configs import settings
@@ -33,7 +33,6 @@ def greet_user(update, context):
 
 def main():
     authorization.get_auth()  # авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
-    print(authorization.get_auth())
     mybot = Updater(settings.BOT_API_KEY,
                     use_context=True)
 
@@ -46,8 +45,10 @@ def main():
     dp.add_handler(CommandHandler('cookie', get_cookie.getcookie))  # Временная функция для внутренней проверки куки.
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("info", get_tickers.get_list_tickers))
-    dp.add_handler(CommandHandler("alert", modify_alerts.alerts))
-    dp.add_handler(CommandHandler("list", modify_alerts.get_alerts))
+    dp.add_handler(CommandHandler("alert", alerts.alerts))
+    dp.add_handler(CommandHandler("list_alert", alerts.get_alerts))
+    dp.add_handler(CommandHandler("subs", notifications.notification))
+    dp.add_handler(CommandHandler("list_subs", notifications.get_notifications))
     dp.add_handler(CommandHandler("curr", get_currency.get_all_currency))
     dp.add_handler(CommandHandler("help", helper.help))
     dp.add_handler(MessageHandler(Filters.text, client_info))

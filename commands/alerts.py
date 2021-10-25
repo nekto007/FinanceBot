@@ -2,10 +2,10 @@ from api.moex.price import (
     get_all_tickers,
     get_price,
 )
-from cron.alerts import (
-    create_alert,
-    list_alert,
-    remove_alert,
+from cron.crons import (
+    create_cron,
+    list_cron,
+    remove_cron,
 )
 
 
@@ -20,7 +20,7 @@ def alerts(update, context):
             '/alert remove SBER — Все оповещения по тикеру SBER будут удалены')
     elif len(text) == 3 and text[1] == 'remove':
         ticket = text[2].upper()
-        remove_status = remove_alert(ticket, chat_id)
+        remove_status = remove_cron(ticket, chat_id, 'alert')
         if remove_status:
             update.message.reply_text(f'Количество удаленных оповещений по тикеру {ticket}: {remove_status}.')
         else:
@@ -34,7 +34,7 @@ def alerts(update, context):
             update.message.reply_text(f'<b>Стоимость тикера уже равна цене указанной вами в оповещении.</b>',
                                       parse_mode='HTML')
         elif tickers_list:
-            create_status = create_alert(ticket, cost, chat_id)
+            create_status = create_cron(ticket, chat_id, 'alert', cost=cost)
             if create_status:
                 if current_cost['current_cost'] / 100 > float(cost):
                     update.message.reply_text(f'<b>Когда цена {tickers_list[0]}({ticket}) упадет до {cost}руб.'
@@ -52,7 +52,7 @@ def alerts(update, context):
 
 def get_alerts(update, context):
     chat_id = update.message.chat.id
-    alerts_list = list_alert(chat_id)
+    alerts_list = list_cron(chat_id, 'alert')
     if alerts_list:
         current_cost = get_price(alerts_list[0][0])
         update.message.reply_text(f'Список оповещений для: {alerts_list[0][0]} - '
