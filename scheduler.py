@@ -1,16 +1,20 @@
+import logging
 import os
 import time
-import logging
-from datetime import datetime
-from sqlalchemy import desc
+from datetime import (
+    datetime,
+)
+
 import schedule
 import telegram
-from cron.crons import remove_cron
+from sqlalchemy import desc
 from telegram.error import Unauthorized
+
 from api.moex.price import (
     get_stock_history_previous_day
 )
 from configs import settings
+from cron.crons import remove_cron
 from db.db_connect import db_session
 from db_models import (
     Calendar,
@@ -28,10 +32,12 @@ def job():
     if subscribes_list:
         previous_working_day = db_session.query(Calendar.date).filter(Calendar.date < str(datetime.now().date())) \
             .order_by(desc(Calendar.date)).limit(15).first()[0]
-        f'<b>Текущая дата: {datetime.now().date()}\n'
-        f'Здравствуйте!\n Вы получили это сообщение, т.к. подписались на автоматическую рассылку обновлений!'
         for subscribe in subscribes_list:
             emitet, chat_id = subscribe
+            bot.sendMessage(chat_id, f'<b>Текущая дата: {datetime.now().date()}\n'
+                                     f'Здравствуйте!\n Вы получили это сообщение, т.к. '
+                                     f'подписались на автоматическую рассылку обновлений!</b>',
+                            parse_mode='HTML')
             history_info = get_stock_history_previous_day(emitet, previous_working_day)
             short_name, sec_id, open_cost, close_cost, value_trade, number_of_trades, low_cost, high_cost, trade_date \
                 = history_info[0]
@@ -66,10 +72,10 @@ def get_working_days():
 
 def main():
     working_days_list = get_working_days()
+    schedule.every().day.at("09:00:00").do(job)
     while True:
         if str(datetime.now().date()) in working_days_list:
             print('today is working day')
-            schedule.every().day.at("09:00").do(job)
             schedule.run_pending()
         time.sleep(60)
 
