@@ -37,6 +37,7 @@ def main():
                     use_context=True)
 
     dp = mybot.dispatcher
+    dp.add_handler(MessageHandler(Filters.text, client_info))
     dp.add_handler(CommandHandler("div", get_dividents.get_dividents_info))
     dp.add_handler(CommandHandler("trand", trand.get_trand_status))
     dp.add_handler(CommandHandler("price", get_cost.get_cost))
