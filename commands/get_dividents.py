@@ -1,8 +1,11 @@
-from api.moex.price import get_date_dividents
 import datetime
+
+from api.moex.price import get_date_dividents
+from clients.client_info import post_client_info
 
 
 def get_dividents_info(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -20,7 +23,6 @@ def get_dividents_info(update, context):
         else:
             update.message.reply_text(f'По указанному тикеру {ticket} дивидендов не найдено. '
                                       f'Попробуйте изменить название акции и повторно сделать запрос.')
-
 
 # if __name__ == '__main__':
 #     pass

@@ -1,9 +1,11 @@
 import datetime
 
 from api.moex.price import get_all_tickers
+from clients.client_info import post_client_info
 
 
 def get_list_tickers(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     if len(text) == 2:
         ticker_info = get_all_tickers(emitet=text[1].upper())[0]

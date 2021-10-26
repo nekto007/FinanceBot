@@ -1,9 +1,11 @@
 import datetime
 
 from api.moex.price import get_average
+from clients.client_info import post_client_info
 
 
 def get_trand_status(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")

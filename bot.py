@@ -3,12 +3,12 @@ from telegram.ext import (
     CommandHandler,
     Filters,
     MessageHandler,
-    Updater,
+    Updater
 )
 
 from auth import authorization
 from bot import helper
-from clients.client_info import client_info
+from clients.client_info import post_client_info
 from commands import (
     alerts,
     get_average,
@@ -35,9 +35,7 @@ def main():
     authorization.get_auth()  # авторизация на бирже по логину и паролю. Получение токена для дальнейшего использования.
     mybot = Updater(settings.BOT_API_KEY,
                     use_context=True)
-
     dp = mybot.dispatcher
-    dp.add_handler(MessageHandler(Filters.text, client_info))
     dp.add_handler(CommandHandler("div", get_dividents.get_dividents_info))
     dp.add_handler(CommandHandler("trand", trand.get_trand_status))
     dp.add_handler(CommandHandler("price", get_cost.get_cost))
@@ -52,7 +50,7 @@ def main():
     dp.add_handler(CommandHandler("list_subs", notifications.get_notifications))
     dp.add_handler(CommandHandler("curr", get_currency.get_all_currency))
     dp.add_handler(CommandHandler("help", helper.help))
-    dp.add_handler(MessageHandler(Filters.text, client_info))
+    dp.add_handler(MessageHandler(Filters.text, post_client_info))
     mybot.start_polling()
     mybot.idle()
 

@@ -2,6 +2,7 @@ from api.moex.price import (
     get_all_tickers,
     get_price,
 )
+from clients.client_info import post_client_info
 from cron.crons import (
     create_cron,
     list_cron,
@@ -10,6 +11,7 @@ from cron.crons import (
 
 
 def alerts(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     chat_id = update.message.chat.id
     if len(text) == 1 or len(text) != 3:

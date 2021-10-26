@@ -2,9 +2,11 @@ import datetime
 import os
 
 from api.moex.price import get_average
+from clients.client_info import post_client_info
 
 
 def get_days_average(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")

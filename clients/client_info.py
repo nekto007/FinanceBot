@@ -2,7 +2,8 @@ from db.db_connect import db_session
 from db_models import Clients
 
 
-def client_info(update, context):
+def post_client_info(update, context):
+    print(update)
     client_data = update.message.chat
     client = Clients(telegram_id=client_data['id'],
                      first_name=client_data['first_name'],
