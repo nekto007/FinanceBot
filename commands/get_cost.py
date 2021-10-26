@@ -2,9 +2,11 @@ import datetime
 import os
 
 from api.moex.price import get_price
+from clients.client_info import post_client_info
 
 
 def get_cost(update, context):
+    post_client_info(update, '')
     text = update.message.text.split()
     if len(text) == 1:
         update.message.reply_text("Введите ticket интересующуй вас акции")
@@ -12,7 +14,7 @@ def get_cost(update, context):
         tickets = text[1:6]
         for ticket in tickets:
             price = get_price(ticket.replace(',', '').upper())
-            if price is not None:
+            if price is not None and price != 'Нет сделок':
                 if price["close_price"]:
                     close_price = f'Цена закрытия: {price["close_price"]} \n'
                 else:
@@ -31,10 +33,14 @@ def get_cost(update, context):
                     with open(price['graph_photo'], 'rb') as graph_photo:
                         update.message.reply_photo(graph_photo)
                         os.remove(price['graph_photo'])
+            elif price == 'Нет сделок':
+                update.message.reply_text(
+                    f'<b>По выбранному тикеру: {ticket} на данный момент не было сделок.</b>', parse_mode='HTML')
             else:
                 update.message.reply_text(
-                    f'По запросу: {ticket} ничего не найдено или не было торгов по выбранной акции.'
-                    f' Попробуйте изменить название акции и повторно сделать запрос или сделать запрос завтра.')
+                    f'<b>По запросу: {ticket} ничего не найдено.\n'
+                    f'Попробуйте изменить название акции и повторно сделать запрос или сделать запрос завтра.</b>',
+                    parse_mode='HTML')
 
 
 if __name__ == '__main__':

@@ -31,41 +31,31 @@ def get_price(emitet):
             parameters = {'iss.meta': 'off'}
             response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data']
-            if len(stock_data):
-                count_string = db_session.query(StockInfo, StockInfo.id).filter(
-                    StockInfo.sec_id == emitet.upper()).count()
+            print(stock_data)
+            if stock_data[0][31] != 'B' and stock_data[0][9] is not None:
+                count_string = db_session.query(StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
-                    if stock_data[0][9] is not None:
-                        if stock_data[0][49]:
-                            close_price = stock_data[0][49] * 100
-                        else:
-                            close_price = ''
-                        stock_info = {'open_price': int(stock_data[0][9] * 100),
-                                      'close_price': close_price,
-                                      'current_cost': int(stock_data[0][12] * 100),
-                                      'low_cost_daily': int(stock_data[0][10] * 100),
-                                      'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
-                        db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
-                        db_session.commit()
-                    else:
-                        return None
+                    stock_info = {'open_price': int(stock_data[0][9] * 100),
+                                  'close_price': int(stock_data[0][49] * 100),
+                                  'current_cost': int(stock_data[0][12] * 100),
+                                  'low_cost_daily': int(stock_data[0][10] * 100),
+                                  'high_cost_daily': int(stock_data[0][11] * 100), 'updated_at': datetime.now()}
+                    db_session.query(StockInfo).filter_by(sec_id=emitet).update(stock_info)
+                    db_session.commit()
                 else:
-                    if stock_data[0][9] is not None:
-                        current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
-                                                 short_name=response['securities']['data'][0][9],
-                                                 open_price=int(stock_data[0][9] * 100),
-                                                 close_price=int(stock_data[0][49] * 100),
-                                                 current_cost=int(stock_data[0][12] * 100),
-                                                 low_cost_daily=int(stock_data[0][10] * 100),
-                                                 high_cost_daily=int(stock_data[0][11] * 100)
-                                                 )
-                        db_session.add(current_info)
-                        db_session.commit()
-                    else:
-                        return None
+                    current_info = StockInfo(sec_id=stock_data[0][0], board_id=stock_data[0][1],
+                                             short_name=response['securities']['data'][0][9],
+                                             open_price=int(stock_data[0][9] * 100),
+                                             close_price=int(stock_data[0][49] * 100),
+                                             current_cost=int(stock_data[0][12] * 100),
+                                             low_cost_daily=int(stock_data[0][10] * 100),
+                                             high_cost_daily=int(stock_data[0][11] * 100)
+                                             )
+                    db_session.add(current_info)
+                    db_session.commit()
             else:
                 db_session.close()
-                return None
+                return 'Нет сделок'
         stock_info = db_session.query(StockInfo.current_cost, StockInfo.open_price,
                                       StockInfo.close_price, StockInfo.low_cost_daily,
                                       StockInfo.high_cost_daily, StockInfo.short_name) \
@@ -248,4 +238,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    pass
+    print(get_price('BISV'))
