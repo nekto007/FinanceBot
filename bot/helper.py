@@ -11,7 +11,7 @@ def help(update, context):
         f'/alert *ticket* *цена* — Добавить оповещение(SBER — тикер, 354.12 — цена, '
         f'на которой придет уведомление): /alert SBER 354.12 \n'
         f'/alert remove *ticket* — Все оповещения по указанному тикету будут удалены: /alert remove SBER \n'
-        f'/list_alert - показать список всех оповещений: /list_alert'
+        f'/list_alert - показать список всех оповещений: /list_alert \n'
         f'/subs *ticket* — Добавить подписку(SBER — тикер)'
         f'на тикер и тогда по рабочим дням в 09:00(мск) я отправлю сообщение): /subs SBER \n'
         f'/subs remove *ticket* — Подписка по указанному тикету будут удалена: /subs remove SBER \n'
