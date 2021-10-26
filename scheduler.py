@@ -39,27 +39,31 @@ def job():
                                      f'подписались на автоматическую рассылку обновлений!</b>',
                             parse_mode='HTML')
             history_info = get_stock_history_previous_day(emitet, previous_working_day)
-            short_name, sec_id, open_cost, close_cost, value_trade, number_of_trades, low_cost, high_cost, trade_date \
-                = history_info[0]
-            photo = history_info[1]
-            try:
-                bot.sendMessage(chat_id,
-                                f'<b>Наименование компании: {short_name}\n'
-                                f'Наименование тикета: {sec_id} \n'
-                                f'Цена открытия: {open_cost / 100} \n'
-                                f'Цена закрытия: {close_cost / 100} \n'
-                                f'Обьем торгов: {value_trade / 100} \n'
-                                f'Количество сделок: {number_of_trades} \n'
-                                f'Минимальная стоимость за торги: {low_cost / 100} \n'
-                                f'Максимальная стоимость за торги: {high_cost / 100} </b>\n'
-                                , parse_mode='HTML')
-                if photo is not None:
-                    with open(photo, 'rb') as graph_photo:
-                        bot.sendPhoto(chat_id, graph_photo)
-                        os.remove(photo)
-            except Unauthorized:
-                print(chat_id, 'Forbidden: bot was blocked by the user')
-                remove_cron(chat_id=chat_id, emitet=emitet.upper(), cron_type='notification')
+            if history_info is not None:
+                short_name, sec_id, open_cost, close_cost, value_trade, number_of_trades, low_cost, high_cost, trade_date \
+                    = history_info[0]
+                photo = history_info[1]
+                try:
+                    bot.sendMessage(chat_id,
+                                    f'<b>Наименование компании: {short_name}\n'
+                                    f'Наименование тикета: {sec_id} \n'
+                                    f'Цена открытия: {open_cost / 100} \n'
+                                    f'Цена закрытия: {close_cost / 100} \n'
+                                    f'Обьем торгов: {value_trade / 100} \n'
+                                    f'Количество сделок: {number_of_trades} \n'
+                                    f'Минимальная стоимость за торги: {low_cost / 100} \n'
+                                    f'Максимальная стоимость за торги: {high_cost / 100} </b>\n'
+                                    , parse_mode='HTML')
+                    if photo is not None:
+                        with open(photo, 'rb') as graph_photo:
+                            bot.sendPhoto(chat_id, graph_photo)
+                            os.remove(photo)
+                except Unauthorized:
+                    print(chat_id, 'Forbidden: bot was blocked by the user')
+                    remove_cron(chat_id=chat_id, emitet=emitet.upper(), cron_type='notification')
+            else:
+                bot.sendMessage(chat_id, f'<b>По выбранному тикеру: {emitet} на данный момент не было сделок.</b>',
+                                parse_mode='HTML')
 
 
 def get_working_days():
@@ -72,7 +76,7 @@ def get_working_days():
 
 def main():
     working_days_list = get_working_days()
-    schedule.every().day.at("09:00:00").do(job)
+    schedule.every().day.at("01:42:00").do(job)
     while True:
         if str(datetime.now().date()) in working_days_list:
             print('today is working day')

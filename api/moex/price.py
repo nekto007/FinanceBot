@@ -157,7 +157,7 @@ def get_stock_history_previous_day(emitet, date):
             StockHistory.trade_date).filter(StockHistory.sec_id == emitet,
                                             StockHistory.trade_date == str(
                                                 date)).first()
-        if len(history_info):
+        if history_info:
             return history_info, get_graph(emitet, 15)
 
 
@@ -238,4 +238,4 @@ def get_currency_api():
 
 
 if __name__ == "__main__":
-    print(get_price('BISV'))
+    pass
