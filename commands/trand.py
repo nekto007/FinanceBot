@@ -14,7 +14,7 @@ def get_trand_status(update, context):
         for ticket in tickets:
             average_15 = get_average(ticket.upper(), 15)
             if average_15 is not None:
-                average_50 = get_average(ticket, 50)
+                average_50 = get_average(ticket.upper(), 50)
                 if average_15["average"] < average_50["average"]:
                     trand_course = 'Тренд идет вниз'
                 else:
