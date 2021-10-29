@@ -51,24 +51,6 @@ def job():
                 else:
                     trand_course = 'Тренд отрицательный'
                 try:
-                    # Trands.sec_id,
-                    # Trands.trand_status,
-                    # Trands.current_trand_days,
-                    # Trands.average_15, Trands.average_50)
-                    print(
-                        f'<b>Наименование компании: {short_name}\n'
-                        f'Наименование тикета: {sec_id} \n'
-                        f'Цена открытия: {open_cost / 100} \n'
-                        f'Цена закрытия: {close_cost / 100} \n'
-                        f'Обьем торгов: {value_trade / 100} \n'
-                        f'Количество сделок: {numb_of_trade} \n'
-                        f'Значение скользящей за 15 дней: {trand[3]} \n'
-                        f'Значение скользящей за 50 дней: {trand[4]} \n'
-                        f'Тренд стоимости акции: {trand_course}</b>'
-                        f'Текущий тренд держится дней: {trand[2]}</b>'
-                        f'Минимальная стоимость за торги: {low_cost / 100} \n'
-                        f'Максимальная стоимость за торги: {high_cost / 100} </b>\n'
-                    )
                     bot.sendMessage(chat_id,
                                     f'<b>Наименование компании: {short_name}\n'
                                     f'Наименование тикета: {sec_id} \n'
