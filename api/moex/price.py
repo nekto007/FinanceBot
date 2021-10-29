@@ -4,6 +4,9 @@ from datetime import (
 )
 
 import requests
+from sqlalchemy import (
+    desc,
+)
 from sqlalchemy.exc import IntegrityError
 
 from auth import authorization
@@ -14,11 +17,20 @@ from db_models import (
     StockHistory,
     StockInfo,
     StockTickers,
+    Trands,
 )
 from get_candles import (
     get_candle,
     get_graph,
 )
+
+
+def get_working_days():
+    working_days_list = []
+    calendar = db_session.query(Calendar.date).all()
+    for day in calendar:
+        working_days_list.append(day[0])
+    return working_days_list
 
 
 def get_price(emitet):
@@ -31,7 +43,6 @@ def get_price(emitet):
             parameters = {'iss.meta': 'off'}
             response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data']
-            print(stock_data)
             if stock_data[0][31] != 'B' and stock_data[0][9] is not None:
                 count_string = db_session.query(StockInfo.id).filter(StockInfo.sec_id == emitet.upper()).count()
                 if count_string:
@@ -81,9 +92,7 @@ def get_price(emitet):
 def get_average(emitet, days):
     all_tickers = get_all_tickers()
     if emitet in all_tickers:
-        history_price = []
         average = {}
-
         date_ago = (datetime.now() - timedelta(days)).date()
         yesterday = (datetime.now() - timedelta(1)).date()
         working_date = db_session.query(Calendar.date).filter(Calendar.date >= str(date_ago),
@@ -118,8 +127,10 @@ def get_stock_history(emitet, days):
     parameters = {'from': date_ago, 'till': yesterday}
     response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
     history_data = response['history']['data']
+    all_data = True
     if len(history_data) != 0:
         for element in history_data:
+            all_data = True
             if element[1] not in trade_list_dates and element[6] is not None:
                 stock_history = StockHistory(board_id=element[0],
                                              trade_date=element[1],
@@ -135,11 +146,14 @@ def get_stock_history(emitet, days):
                     db_session.commit()
                 except IntegrityError:
                     db_session.rollback()
+            else:
+                all_data = False
     else:
         db_session.close()
         return None
     db_session.close()
-    return True
+    if all_data:
+        return True
 
 
 def get_stock_history_previous_day(emitet, date):
@@ -235,6 +249,74 @@ def get_currency_api():
     for _x in currency_data:
         currency_info[_x[2]] = _x[3]
     return currency_info
+
+
+def get_trand(emitet):
+    is_emitet = db_session.query(Trands.trand_date).filter(Trands.sec_id == emitet)
+    if is_emitet.count() and is_emitet[0][0] == str(datetime.now().date()):
+        trand = db_session.query(
+            Trands.sec_id,
+            Trands.trand_status,
+            Trands.current_trand_days,
+            Trands.average_15, Trands.average_50) \
+            .filter(Trands.sec_id == emitet).first()
+        return trand
+    else:
+        get_status_history = get_stock_history(emitet, 150)
+        if get_status_history:
+            last_100_days_history = db_session.query(StockHistory.close_cost, StockHistory.trade_date) \
+                .order_by(desc(StockHistory.trade_date)) \
+                .filter(StockHistory.sec_id == emitet).limit(100).all()
+            start_50_days = -1
+            end_50_days = 50
+            start_15_days = 50
+            end_15_days = 64
+            while start_15_days > -1:
+                is_trand = False
+                history_50_price = [history_trade_date[0]
+                                    for history_trade_date in last_100_days_history[start_50_days:end_50_days:-1]]
+                history_50_price_sum = round((sum(history_50_price) / 100) / len(history_50_price), 3)
+                history_15_price = [history_trade_date[0]
+                                    for history_trade_date in last_100_days_history[start_15_days:end_15_days:]]
+                history_15_price_sum = round((sum(history_15_price) / 100) / len(history_15_price), 3)
+                if history_15_price_sum > history_50_price_sum:
+                    is_trand = True
+                trand_info = db_session.query(Trands.current_trand_days, Trands.trand_status) \
+                    .filter(Trands.sec_id == emitet).first()
+                if not trand_info:
+                    trand_status = Trands(sec_id=emitet, current_trand_days=1,
+                                          trand_status=is_trand,
+                                          trand_date=datetime.now().date(),
+                                          created_at=datetime.now(),
+                                          updated_at=datetime.now(),
+                                          average_15=history_15_price_sum,
+                                          average_50=history_50_price_sum, )
+                    db_session.add(trand_status)
+                    db_session.commit()
+                else:
+                    current_trand_days = 1
+                    if trand_info[1] == is_trand:
+                        current_trand_days = trand_info[0] + 1
+                    trand_status = {'sec_id': emitet,
+                                    'current_trand_days': current_trand_days,
+                                    'trand_status': is_trand,
+                                    'trand_date': datetime.now().date(),
+                                    'updated_at': datetime.now(),
+                                    'average_15': history_15_price_sum,
+                                    'average_50': history_50_price_sum}
+                    db_session.query(Trands).filter_by(sec_id=emitet).update(trand_status)
+                    db_session.commit()
+                start_50_days -= 1
+                end_50_days -= 1
+                start_15_days -= 1
+                end_15_days -= 1
+    trand = db_session.query(
+        Trands.sec_id,
+        Trands.trand_status,
+        Trands.current_trand_days,
+        Trands.average_15, Trands.average_50) \
+        .filter(Trands.sec_id == emitet).first()
+    return trand
 
 
 if __name__ == "__main__":

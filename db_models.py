@@ -144,9 +144,12 @@ class Trands(Base):
     id = Column(INTEGER, primary_key=True)
     sec_id = Column(VARCHAR, nullable=False, comment='Идентификатор финансового инструмента')
     current_trand_days = Column(INTEGER, default=1)
+    average_15 = Column(INTEGER)
+    average_50 = Column(INTEGER)
     trand_status = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, default=current_timestamp, comment='Дата создания')
     updated_at = Column(INTEGER, default=current_timestamp, comment='Дата обновления')
+    trand_date = Column(VARCHAR)
 
     def __repr__(self):
         return f'{self.id}, {self.sec_id}'

@@ -11,7 +11,9 @@ from sqlalchemy import desc
 from telegram.error import Unauthorized
 
 from api.moex.price import (
-    get_stock_history_previous_day
+    get_stock_history_previous_day,
+    get_trand,
+    get_working_days,
 )
 from configs import settings
 from cron.crons import remove_cron
@@ -39,18 +41,45 @@ def job():
                                      f'подписались на автоматическую рассылку обновлений!</b>',
                             parse_mode='HTML')
             history_info = get_stock_history_previous_day(emitet, previous_working_day)
+            trand = get_trand(emitet)
             if history_info is not None:
-                short_name, sec_id, open_cost, close_cost, value_trade, number_of_trades, low_cost, high_cost, trade_date \
+                short_name, sec_id, open_cost, close_cost, value_trade, numb_of_trade, low_cost, high_cost, trade_date \
                     = history_info[0]
                 photo = history_info[1]
+                if trand[1] == 1:
+                    trand_course = 'Тренд положительный'
+                else:
+                    trand_course = 'Тренд отрицательный'
                 try:
+                    # Trands.sec_id,
+                    # Trands.trand_status,
+                    # Trands.current_trand_days,
+                    # Trands.average_15, Trands.average_50)
+                    print(
+                        f'<b>Наименование компании: {short_name}\n'
+                        f'Наименование тикета: {sec_id} \n'
+                        f'Цена открытия: {open_cost / 100} \n'
+                        f'Цена закрытия: {close_cost / 100} \n'
+                        f'Обьем торгов: {value_trade / 100} \n'
+                        f'Количество сделок: {numb_of_trade} \n'
+                        f'Значение скользящей за 15 дней: {trand[3]} \n'
+                        f'Значение скользящей за 50 дней: {trand[4]} \n'
+                        f'Тренд стоимости акции: {trand_course}</b>'
+                        f'Текущий тренд держится дней: {trand[2]}</b>'
+                        f'Минимальная стоимость за торги: {low_cost / 100} \n'
+                        f'Максимальная стоимость за торги: {high_cost / 100} </b>\n'
+                    )
                     bot.sendMessage(chat_id,
                                     f'<b>Наименование компании: {short_name}\n'
                                     f'Наименование тикета: {sec_id} \n'
                                     f'Цена открытия: {open_cost / 100} \n'
                                     f'Цена закрытия: {close_cost / 100} \n'
                                     f'Обьем торгов: {value_trade / 100} \n'
-                                    f'Количество сделок: {number_of_trades} \n'
+                                    f'Количество сделок: {numb_of_trade} \n'
+                                    f'Значение скользящей за 15 дней: {trand[3]} \n'
+                                    f'Значение скользящей за 50 дней: {trand[4]} \n'
+                                    f'Тренд стоимости акции: {trand_course} \n'
+                                    f'Текущий тренд держится дней: {trand[2]} \n'
                                     f'Минимальная стоимость за торги: {low_cost / 100} \n'
                                     f'Максимальная стоимость за торги: {high_cost / 100} </b>\n'
                                     , parse_mode='HTML')
@@ -64,14 +93,6 @@ def job():
             else:
                 bot.sendMessage(chat_id, f'<b>По выбранному тикеру: {emitet} на данный момент не было сделок.</b>',
                                 parse_mode='HTML')
-
-
-def get_working_days():
-    working_days_list = []
-    calendar = db_session.query(Calendar.date).all()
-    for day in calendar:
-        working_days_list.append(day[0])
-    return working_days_list
 
 
 def main():
