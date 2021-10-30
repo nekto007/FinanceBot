@@ -1,7 +1,9 @@
 import datetime
+import os
 
 from api.moex.price import get_average
 from clients.client_info import post_client_info
+from get_candles import get_graph
 
 
 def get_trand_status(update, context):
@@ -12,21 +14,29 @@ def get_trand_status(update, context):
     else:
         tickets = text[1:6]
         for ticket in tickets:
-            average_15 = get_average(ticket.upper(), 15)
-            if average_15 is not None:
-                average_50 = get_average(ticket.upper(), 50)
-                if average_15["average"] < average_50["average"]:
+            history_price_15 = get_average(ticket.upper(), 15)
+            if history_price_15 is not None:
+                average_15 = round(sum(history_price_15[0]) / len(history_price_15[0]), 3)
+                short_name = history_price_15[1]
+                history_price_50 = get_average(ticket.upper(), 50)
+                average_50 = round(sum(history_price_50[0]) / len(history_price_50[0]), 3)
+                if average_15 < average_50:
                     trand_course = 'Тренд идет вниз'
                 else:
                     trand_course = 'Тренд идет вверх'
+                graph_photo = get_graph(ticket.upper(), 50)
                 update.message.reply_text(
                     f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
-                    f'Наименование компании: {average_15["company_name"]} \n'
-                    f'Наименование тикета: {average_15["ticket_name"]} \n'
-                    f'Значение скользящей за 15 дней: {average_15["average"]} \n'
-                    f'Значение скользящей за 50 дней: {average_50["average"]} \n'
+                    f'Наименование компании: {short_name} \n'
+                    f'Наименование тикета: {ticket.upper()} \n'
+                    f'Значение скользящей за 15 дней: {average_15} \n'
+                    f'Значение скользящей за 50 дней: {average_50} \n'
                     f'Тренд стоимости акции: {trand_course}</b>'
                     , parse_mode='HTML')
+                if graph_photo is not None:
+                    with open(graph_photo, 'rb') as photo:
+                        update.message.reply_photo(photo)
+                        os.remove(graph_photo)
             else:
                 update.message.reply_text(f'По запросу {ticket} ничего не найдено. Попробуйте изменить название '
                                           f'акции и повторно сделать запрос.')

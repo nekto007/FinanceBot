@@ -7,10 +7,10 @@ from datetime import (
 
 import schedule
 import telegram
-from sqlalchemy import desc
 from telegram.error import Unauthorized
 
 from api.moex.price import (
+    get_previous_working_day,
     get_stock_history_previous_day,
     get_trand,
     get_working_days,
@@ -19,7 +19,6 @@ from configs import settings
 from cron.crons import remove_cron
 from db.db_connect import db_session
 from db_models import (
-    Calendar,
     Cron,
 )
 
@@ -32,15 +31,13 @@ def job():
     subscribes_list = db_session.query(Cron.sec_id, Cron.chat_id) \
         .filter(Cron.cron_status == 1, Cron.cron_type == 'notification').all()
     if subscribes_list:
-        previous_working_day = db_session.query(Calendar.date).filter(Calendar.date < str(datetime.now().date())) \
-            .order_by(desc(Calendar.date)).limit(15).first()[0]
         for subscribe in subscribes_list:
             emitet, chat_id = subscribe
             bot.sendMessage(chat_id, f'<b>Текущая дата: {datetime.now().date()}\n'
                                      f'Здравствуйте!\n Вы получили это сообщение, т.к. '
                                      f'подписались на автоматическую рассылку обновлений!</b>',
                             parse_mode='HTML')
-            history_info = get_stock_history_previous_day(emitet, previous_working_day)
+            history_info = get_stock_history_previous_day(emitet)
             trand = get_trand(emitet)
             if history_info is not None:
                 short_name, sec_id, open_cost, close_cost, value_trade, numb_of_trade, low_cost, high_cost, trade_date \

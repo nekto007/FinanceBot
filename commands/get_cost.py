@@ -2,6 +2,7 @@ import datetime
 import os
 
 from api.moex.price import get_price
+from get_candles import get_graph
 from clients.client_info import post_client_info
 
 
@@ -15,22 +16,24 @@ def get_cost(update, context):
         for ticket in tickets:
             price = get_price(ticket.replace(',', '').upper())
             if price is not None and price != 'Нет сделок':
-                if price["close_price"]:
-                    close_price = f'Цена закрытия: {price["close_price"]} \n'
+                if price[3] != '':
+                    close_price = f'Цена закрытия: {price[3] / 100} \n'
+                    graph_photo = get_graph(ticket.replace(',', '').upper(), 15)
                 else:
                     close_price = f''
+                    graph_photo = None
                 update.message.reply_text(
                     f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
-                    f'Наименование компании: {price["company_name"]}\n'
-                    f'Наименование тикета: {price["ticket_name"]} \n'
-                    f'Стоимость акции: {(price["current_cost"])} \n'
-                    f'Цена открытия: {price["open_price"]} \n'
+                    f'Наименование компании: {price[6]}\n'
+                    f'Наименование тикета: {price[0]} \n'
+                    f'Стоимость акции: {(price[1])} \n'
+                    f'Цена открытия: {price[2]} \n'
                     f'{close_price}'
-                    f'Минимальная стоимость за торги: {price["low_cost_daily"]} \n'
-                    f'Максимальная стоимость за торги: {price["high_cost_daily"]} </b>\n'
+                    f'Минимальная стоимость за торги: {price[4]} \n'
+                    f'Максимальная стоимость за торги: {price[5]} </b>\n'
                     , parse_mode='HTML')
-                if price['graph_photo'] is not None:
-                    with open(price['graph_photo'], 'rb') as graph_photo:
+                if graph_photo is not None:
+                    with open(graph_photo, 'rb') as graph_photo:
                         update.message.reply_photo(graph_photo)
                         os.remove(price['graph_photo'])
             elif price == 'Нет сделок':
