@@ -116,7 +116,7 @@ def get_stock_history(emitet, days):
                 except IntegrityError:
                     db_session.rollback()
                 db_session.close()
-                return True
+        return True
     else:
         return None
 
