@@ -76,7 +76,7 @@ def job():
 
 def main():
     working_days_list = get_working_days()
-    schedule.every().day.at("00:06:00").do(job)
+    schedule.every().day.at("09:00:00").do(job)
     while True:
         if str(datetime.now().date()) in working_days_list:
             print('today is working day')
