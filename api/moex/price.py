@@ -80,7 +80,6 @@ def get_average(emitet, days):
                                                                        StockHistory.trade_date >= str(date_ago)).all()
         if len(working_date) != len(trade_dates):
             stock_history = get_stock_history(emitet, days)
-            print(stock_history)
             if stock_history is None:
                 db_session.close()
                 return None
@@ -116,6 +115,8 @@ def get_stock_history(emitet, days):
                 except IntegrityError:
                     db_session.rollback()
                 db_session.close()
+            else:
+                return None
         return True
     else:
         return None

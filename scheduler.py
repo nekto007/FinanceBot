@@ -33,8 +33,8 @@ def job():
     if subscribes_list:
         for subscribe in subscribes_list:
             emitet, chat_id = subscribe
-            history_info = get_stock_history_previous_day(emitet)
             trand = get_trand(emitet)
+            history_info = get_stock_history_previous_day(emitet)
             if history_info is not None:
                 short_name, sec_id, open_cost, close_cost, value_trade, numb_of_trade, low_cost, high_cost, trade_date \
                     = history_info[0]
