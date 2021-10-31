@@ -19,6 +19,7 @@ from commands import (
     get_tickers,
     notifications,
     trand,
+    converter,
 )
 from configs import settings
 
@@ -49,6 +50,9 @@ def main():
     dp.add_handler(CommandHandler("subs", notifications.notification))
     dp.add_handler(CommandHandler("list_subs", notifications.get_notifications))
     dp.add_handler(CommandHandler("curr", get_currency.get_all_currency))
+    dp.add_handler(CommandHandler("rub", converter.rub))
+    dp.add_handler(CommandHandler("usd", converter.usd))
+    dp.add_handler(CommandHandler("eur", converter.eur))
     dp.add_handler(CommandHandler("help", helper.help))
     dp.add_handler(MessageHandler(Filters.text, post_client_info))
     mybot.start_polling()
