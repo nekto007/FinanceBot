@@ -33,10 +33,6 @@ def job():
     if subscribes_list:
         for subscribe in subscribes_list:
             emitet, chat_id = subscribe
-            bot.sendMessage(chat_id, f'<b>Текущая дата: {datetime.now().date()}\n'
-                                     f'Здравствуйте!\n Вы получили это сообщение, т.к. '
-                                     f'подписались на автоматическую рассылку обновлений!</b>',
-                            parse_mode='HTML')
             history_info = get_stock_history_previous_day(emitet)
             trand = get_trand(emitet)
             if history_info is not None:
@@ -48,6 +44,10 @@ def job():
                 else:
                     trand_course = 'Тренд отрицательный'
                 try:
+                    bot.sendMessage(chat_id, f'<b>Текущая дата: {datetime.now().date()}\n'
+                                             f'Здравствуйте!\n Вы получили это сообщение, т.к. '
+                                             f'подписались на автоматическую рассылку обновлений!</b>',
+                                    parse_mode='HTML')
                     bot.sendMessage(chat_id,
                                     f'<b>Наименование компании: {short_name}\n'
                                     f'Наименование тикета: {sec_id} \n'
@@ -76,7 +76,7 @@ def job():
 
 def main():
     working_days_list = get_working_days()
-    schedule.every().day.at("09:00:00").do(job)
+    schedule.every().day.at("00:06:00").do(job)
     while True:
         if str(datetime.now().date()) in working_days_list:
             print('today is working day')
