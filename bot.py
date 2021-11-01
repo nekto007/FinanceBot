@@ -14,13 +14,12 @@ from commands import (
     get_average,
     get_cookie,
     get_cost,
-    get_currency,
     get_dividents,
     get_tickers,
     notifications,
     trand,
-    converter,
 )
+from api.moex import currency
 from configs import settings
 
 logging.basicConfig(level=logging.DEBUG,
@@ -49,10 +48,10 @@ def main():
     dp.add_handler(CommandHandler("list_alert", alerts.get_alerts))
     dp.add_handler(CommandHandler("subs", notifications.notification))
     dp.add_handler(CommandHandler("list_subs", notifications.get_notifications))
-    dp.add_handler(CommandHandler("curr", get_currency.get_all_currency))
-    dp.add_handler(CommandHandler("rub", converter.rub))
-    dp.add_handler(CommandHandler("usd", converter.usd))
-    dp.add_handler(CommandHandler("eur", converter.eur))
+    dp.add_handler(CommandHandler("curr", currency.get_all_currency))
+    dp.add_handler(CommandHandler("rub", currency.rub))
+    dp.add_handler(CommandHandler("usd", currency.usd))
+    dp.add_handler(CommandHandler("eur", currency.eur))
     dp.add_handler(CommandHandler("help", helper.help))
     dp.add_handler(MessageHandler(Filters.text, post_client_info))
     mybot.start_polling()
