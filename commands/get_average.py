@@ -24,7 +24,7 @@ def get_days_average(update, context):
                     f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
                     f'Наименование компании: {history_price[1]} \n'
                     f'Наименование тикета: {ticket} \n'
-                    f'Значение скользящей за {days} дней: {average}</b>', parse_mode='HTML')
+                    f'Значение скользящей за {days} дней: {"₽{:,.2f}".format(average)}</b>', parse_mode='HTML')
                 if candle_photo is not None:
                     with open(candle_photo, 'rb') as photo:
                         update.message.reply_photo(photo)

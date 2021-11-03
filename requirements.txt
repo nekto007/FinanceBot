@@ -23,3 +23,4 @@ urllib3==1.26.7
 virtualenv==20.8.1
 virtualenv-clone==0.5.7
 schedule~=1.1.0
+prettytable~=2.4.0
