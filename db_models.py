@@ -173,5 +173,19 @@ class Cron(Base):
         return f'{self.id}, {self.chat_id}, {self.sec_id}'
 
 
+class Currency(Base):
+    __tablename__ = 'currency'
+    __tableargs__ = {'comment': 'валютные пары'}
+
+    id = Column(INTEGER, primary_key=True)
+    sec_id = Column(VARCHAR, nullable=False)
+    value = Column(INTEGER(), comment='цена валютной пары')
+    created_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата создания')
+    updated_at = Column(TIMESTAMP, default=current_timestamp(), comment='Дата обновления')
+
+    def __repr__(self):
+        return f'{self.id}, {self.sec_id}, {self.value}'
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
