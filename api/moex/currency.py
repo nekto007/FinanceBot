@@ -7,28 +7,32 @@ from sqlalchemy.exc import IntegrityError
 
 
 def get_currency_api():
-    currency_info = {}
-    url = 'https://iss.moex.com/iss/statistics/engines/futures/markets/indicativerates/securities.json?iss.meta=off'
-    response = requests.get(url)
-    currency_data = response.json()['securities']['data']
-    for _x in currency_data:
-        currency_info[_x[2]] = _x[3]
 
-        curr_date = db_session.query(Currency.updated_at).order_by(Currency.updated_at.desc()).first()
-        diff_time = datetime.now() - curr_date[0]
-
-
-        currency_to_db = Currency(sec_id=_x[2], value=_x[3], created_at=datetime.now(), updated_at=datetime.now())
-        db_session.add(currency_to_db)
-        try:
-            db_session.commit()
-        except IntegrityError:
-            db_session.rollback()
-        db_session.close()
-
-    print(curr_date)
-    print(diff_time)
-    return currency_info
+    curr_date = db_session.query(Currency.updated_at).order_by(Currency.updated_at.desc()).first()
+    diff_time = datetime.now() - curr_date[0]
+    if diff_time > timedelta(hours=11):
+        print('DIFFTIME > TIMEDELTA')
+        currency_info = {}
+        url = 'https://iss.moex.com/iss/statistics/engines/futures/markets/indicativerates/securities.json?iss.meta=off'
+        response = requests.get(url)
+        currency_data = response.json()['securities']['data']
+        for _x in currency_data:
+            currency_info[_x[2]] = _x[3]
+            currency_to_db = Currency(sec_id=_x[2], value=_x[3], created_at=datetime.now(), updated_at=datetime.now())
+            db_session.add(currency_to_db)
+            try:
+                db_session.commit()
+            except IntegrityError:
+                db_session.rollback()
+            db_session.close()
+        return currency_info
+    else:
+        print('ANOTHER')
+        currency_info={}
+        request_to_db=db_session.query(Currency.sec_id, Currency.value).order_by(Currency.updated_at.desc()).limit(18)
+        for _y in request_to_db:
+            currency_info[_y[0]]=_y[1]
+        return currency_info
 
 
 def get_all_currency(update, context):
