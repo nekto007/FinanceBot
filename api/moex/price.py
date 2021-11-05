@@ -70,9 +70,19 @@ def get_price(emitet):
             response = requests.get(url, params=parameters, cookies=authorization.get_auth()).json()
             stock_data = response['marketdata']['data'][0]
             if stock_data[31] != 'B' and stock_data[9] is not None:
+                close_price = stock_data[49]
+                if close_price is None:
+                    last_working_day = get_previous_working_day()
+                    stock_history = get_stock_history(emitet, last_working_day)
+                    if stock_history:
+                        close_price = db_session.query(StockHistory.close_cost) \
+                            .filter(StockHistory.sec_id == emitet,
+                                    StockHistory.trade_date == last_working_day).first()[0]
+                else:
+                    close_price = int(close_price * 100)
                 if price_date:
                     stock_info = {
-                        'open_price': int(stock_data[9] * 100), 'close_price': int(stock_data[49] * 100),
+                        'open_price': int(stock_data[9] * 100), 'close_price': close_price,
                         'current_cost': int(stock_data[12] * 100), 'low_cost_daily': int(stock_data[10] * 100),
                         'high_cost_daily': int(stock_data[11] * 100), 'updated_at': datetime.now()}
                     db_session.query(StockInfo).filter_by(sec_id=emitet.upper()).update(stock_info)
@@ -80,7 +90,7 @@ def get_price(emitet):
                 else:
                     current_info = StockInfo(
                         sec_id=stock_data[0], board_id=stock_data[1], short_name=response['securities']['data'][9],
-                        open_price=int(stock_data[9] * 100), close_price=int(stock_data[49] * 100),
+                        open_price=int(stock_data[9] * 100), close_price=close_price,
                         current_cost=int(stock_data[12] * 100), low_cost_daily=int(stock_data[10] * 100),
                         high_cost_daily=int(stock_data[11] * 100), updated_at=datetime.now(),
                         created_at=datetime.now())
@@ -214,10 +224,10 @@ def get_trand(emitet):
             while start_15_days > -1:
                 is_trand = False
                 history_price = [history_trade_date[0]
-                                    for history_trade_date in last_100_days_history[start_50_days:end_50_days:-1]]
+                                 for history_trade_date in last_100_days_history[start_50_days:end_50_days:-1]]
                 history_50_price_sum = round((sum(history_price) / 100) / len(history_price), 3)
                 history_price = [history_trade_date[0]
-                                    for history_trade_date in last_100_days_history[start_15_days:end_15_days:]]
+                                 for history_trade_date in last_100_days_history[start_15_days:end_15_days:]]
                 history_15_price_sum = round((sum(history_price) / 100) / len(history_price), 3)
                 if history_15_price_sum > history_50_price_sum:
                     is_trand = True
