@@ -7,10 +7,9 @@ from sqlalchemy.exc import IntegrityError
 
 
 def get_currency_api():
-
     curr_date = db_session.query(Currency.updated_at).order_by(Currency.updated_at.desc()).first()
     diff_time = datetime.now() - curr_date[0]
-    if diff_time > timedelta(hours=11):
+    if diff_time > timedelta(minutes=15):
         print('DIFFTIME > TIMEDELTA')
         currency_info = {}
         url = 'https://iss.moex.com/iss/statistics/engines/futures/markets/indicativerates/securities.json?iss.meta=off'
@@ -27,7 +26,7 @@ def get_currency_api():
             db_session.close()
         return currency_info
     else:
-        print('ANOTHER')
+        print('FROM DB')
         currency_info={}
         request_to_db=db_session.query(Currency.sec_id, Currency.value).order_by(Currency.updated_at.desc()).limit(18)
         for _y in request_to_db:
