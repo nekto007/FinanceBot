@@ -23,7 +23,7 @@ def create_cron(emitet, chat_id, cron_type, cost=0):
         add_cron = Cron(
             chat_id=chat_id,
             sec_id=emitet.upper(),
-            sum=int(cost)*100,
+            sum=float(cost)*100,
             cron_type=cron_type,
             created_at=datetime.now(),
             updated_at=datetime.now())
@@ -53,4 +53,4 @@ def list_cron(chat_id, cron_type):
 
 
 if __name__ == '__main__':
-    print(list_cron('6885580'))
+    pass
