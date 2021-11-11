@@ -49,6 +49,7 @@ def main():
     dp.add_handler(CommandHandler("subs", notifications.notification))
     dp.add_handler(CommandHandler("list_subs", notifications.get_notifications))
     dp.add_handler(CommandHandler("curr", currency.get_all_currency))
+    dp.add_handler(CommandHandler("hist", currency.get_hist_curr))
     dp.add_handler(CommandHandler("rub", currency.rub))
     dp.add_handler(CommandHandler("usd", currency.usd))
     dp.add_handler(CommandHandler("eur", currency.eur))
