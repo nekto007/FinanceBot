@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from api.moex.currency import get_currency_api
 from datetime import (
     datetime,
 )
@@ -126,10 +127,12 @@ def send_alerts():
 
 def main():
     working_days_list = get_working_days()
+    schedule.every().day.at("09:00:00").do(job)
+    schedule.every().day.at("09:05:00").do(get_currency_api)
     schedule.every().day.at('09:00:00').do(send_notifications)
     schedule.every().hour.at('00:00').until('20:00').do(send_alerts)
     while True:
-        if str(datetime.now().date()) in working_days_list:
+        if str(datetime.now()) in working_days_list:
             print('today is working day')
             print(schedule.next_run())
             schedule.run_pending()
