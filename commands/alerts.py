@@ -39,7 +39,7 @@ def alerts(update, context):
             create_status = create_cron(ticket, chat_id, 'alert', cost=cost)
             if create_status:
                 if current_cost['current_cost'] / 100 > float(cost):
-                    update.message.reply_text(f'<b>Когда цена {tickers_list[0]}({ticket}) упадет до {cost}руб.'
+                    update.message.reply_text(f'<b>Когда цена {tickers_list[0][1]}({ticket}) упадет до {cost}руб.'
                                               f', я отправлю тебе сообщение.</b>',
                                               parse_mode='HTML')
                 else:
