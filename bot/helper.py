@@ -7,6 +7,7 @@ def help(update, context):
         f'/avg50 *ticket*, *ticket - скользящая средняя за 50 дней: /average50 aflt \n'
         f'/curr - текущая котировка валют: /curr \n'
         f'/rub, /usd, /eur - конвертер: /rub 5500 \n'
+        f'/hist *usd/rub (eur/rub)* *days*: график валютной пары: /hist usb/rub 15 \n'
         f'/info - информация о торгуемых бумагах биржи: /info \n'
         f'/info *ticket* - информация о конкретной бумаге: /info aflt \n'
         f'/alert *ticket* *цена* — Добавить оповещение(SBER — тикер, 354.12 — цена, '
