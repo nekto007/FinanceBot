@@ -17,7 +17,7 @@ def get_cost(update, context):
             price = get_price(ticket.replace(',', '').upper())
             if price is not None and price != 'Нет сделок':
                 if price[3] != '':
-                    close_price = f'Цена закрытия: {price[3] / 100} \n'
+                    close_price = f'Цена закрытия: {"{:,.2f}₽".format(price[3] / 100)} \n'
                     graph_photo = get_graph(ticket.replace(',', '').upper(), 15)
                 else:
                     close_price = f''
@@ -26,11 +26,11 @@ def get_cost(update, context):
                     f'<b>Текущая дата: {datetime.datetime.now().date()}\n'
                     f'Наименование компании: {price[6]}\n'
                     f'Наименование тикета: {price[0]} \n'
-                    f'Стоимость акции: {(price[1])} \n'
-                    f'Цена открытия: {price[2]} \n'
+                    f'Стоимость акции: {"{:,.2f}₽".format(price[1] / 100)} \n'
+                    f'Цена открытия: {"{:,.2f}₽".format(price[2] / 100)} \n'
                     f'{close_price}'
-                    f'Минимальная стоимость за торги: {price[4]} \n'
-                    f'Максимальная стоимость за торги: {price[5]} </b>\n'
+                    f'Минимальная стоимость за торги: {"{:,.2f}₽".format(price[4] / 100)} \n'
+                    f'Максимальная стоимость за торги: {"{:,.2f}₽".format(price[5] / 100)} </b>\n'
                     , parse_mode='HTML')
                 if graph_photo is not None:
                     with open(graph_photo, 'rb') as graph_photo:
