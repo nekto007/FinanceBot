@@ -40,5 +40,5 @@ python get_calendar.py # add to table calendar working days
 
 ```shell
 python bot.py # run telegram bot 
-python sheduler.py # run sheduler
+python scheduler.py # run scheduler
 ```
