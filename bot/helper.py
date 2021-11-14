@@ -17,7 +17,7 @@ def help(update, context):
         f'/subs *ticket* — Добавить подписку(SBER — тикер)'
         f'на тикер и тогда по рабочим дням в 09:00(мск) я отправлю сообщение): /subs SBER \n'
         f'/subs remove *ticket* — Подписка по указанному тикету будут удалена: /subs remove SBER \n'
-        f'/list_alert - показать список всех подписок: /list_subs')
+        f'/list_subs - показать список всех подписок: /list_subs')
 
 
 if __name__ == '__main__':
