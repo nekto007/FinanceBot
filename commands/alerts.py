@@ -60,11 +60,13 @@ def get_alerts(update, context):
     if alerts_list:
         current_cost = get_price(alerts_list[0][0])
         update.message.reply_text(f'Список оповещений для: {alerts_list[0][0]} - '
-                                  f'Текущая цена: {current_cost["current_cost"]} руб.\n')
+                                  f'Текущая цена: {"{:,.2f}₽".format(current_cost["current_cost"] / 100)}\n')
         if current_cost['current_cost'] > int(alerts_list[0][1]):
-            update.message.reply_text(f'Оповещение сработает когда цена вырастет до {alerts_list[0][1] / 100}')
+            update.message.reply_text(f'Оповещение сработает когда цена вырастет до '
+                                      f'{"{:,.2f}₽".format(alerts_list[0][1] / 100)}')
         else:
-            update.message.reply_text(f'Оповещение сработает когда цена упадет до {alerts_list[0][1] / 100}')
+            update.message.reply_text(f'Оповещение сработает когда цена упадет до '
+                                      f'{"{:,.2f}₽".format(alerts_list[0][1] / 100)}')
     else:
         update.message.reply_text(f'<b>На данный момент твой список оповещений пустой.</b>',
                                   parse_mode='HTML')
